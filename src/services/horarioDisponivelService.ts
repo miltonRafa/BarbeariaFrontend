@@ -1,10 +1,5 @@
 import { api } from "./api";
 
-export const listarFuncionarios = async () => {
-  const response = await api.get("/funcionarios");
-  return response.data;
-};
-
 export const listarHorariosDisponiveis = async (
   funcionarioId: number,
   data: string
@@ -16,5 +11,14 @@ export const listarHorariosDisponiveis = async (
     },
   });
 
+  return response.data;
+};
+
+export const criarHorarioDisponivel = async (dados: {
+  funcionarioId: number;
+  inicio: string;
+  fim: string;
+}) => {
+  const response = await api.post("/horarios-disponiveis", dados);
   return response.data;
 };
