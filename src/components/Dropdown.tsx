@@ -20,7 +20,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
   return (
     <div className="w-full md:w-80">
       {label && (
-        <p className="text-zinc-400 text-sm mb-2">{label}</p>
+        <p className="text-[#9ca3af] text-sm mb-2">{label}</p>
       )}
 
       <div className="relative">
@@ -29,7 +29,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
           onClick={() => setOpen(!open)}
           className="
             w-full
-            bg-[#0b0b0c]
+            bg-[#1a1a1d]
             border border-white/10
             text-white
             px-4 py-3

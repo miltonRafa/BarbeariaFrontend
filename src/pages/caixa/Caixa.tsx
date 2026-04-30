@@ -7,18 +7,18 @@ function Caixa() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-          <p className="text-sm text-slate-400">Saldo atual</p>
+        <div className="bg-[#121214] border border-[#1f1f23] rounded-2xl p-5">
+          <p className="text-sm text-[#9ca3af]">Saldo atual</p>
           <p className="text-2xl font-bold text-green-400">R$ 0,00</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-          <p className="text-sm text-slate-400">Entradas</p>
+        <div className="bg-[#121214] border border-[#1f1f23] rounded-2xl p-5">
+          <p className="text-sm text-[#9ca3af]">Entradas</p>
           <p className="text-2xl font-bold text-blue-400">R$ 0,00</p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-          <p className="text-sm text-slate-400">Saídas</p>
+        <div className="bg-[#121214] border border-[#1f1f23] rounded-2xl p-5">
+          <p className="text-sm text-[#9ca3af]">Saídas</p>
           <p className="text-2xl font-bold text-red-400">R$ 0,00</p>
         </div>
 

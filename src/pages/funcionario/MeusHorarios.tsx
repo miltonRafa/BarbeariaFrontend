@@ -92,7 +92,7 @@ function MeusHorarios() {
       </h1>
 
       <div className="mb-6">
-        <label className="block text-zinc-300 mb-3">Escolha o dia</label>
+        <label className="block text-[#9ca3af] mb-3">Escolha o dia</label>
 
         <div className="flex gap-2 overflow-x-auto pb-2">
           {Array.from({ length: 10 }).map((_, index) => {
@@ -114,7 +114,7 @@ function MeusHorarios() {
                 className={`min-w-[60px] px-4 py-3 rounded-xl font-bold border transition ${
                   selecionado
                     ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                    : "bg-slate-900 text-white border-slate-700 hover:border-[#c59d5f]"
+                    : "bg-[#121214] text-white border-[#1f1f23] hover:border-[#c59d5f]"
                 }`}
               >
                 {dia}
@@ -124,33 +124,33 @@ function MeusHorarios() {
         </div>
       </div>
 
-      <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-8 text-white">
+      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-8 text-white">
         <h2 className="text-xl font-bold text-[#c59d5f] mb-4">
           Disponibilizar horário
         </h2>
 
-        <p className="text-zinc-300 mb-4">
+        <p className="text-[#9ca3af] mb-4">
           O horário será criado para o dia selecionado acima.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-zinc-300 mb-2">Início</label>
+            <label className="block text-[#9ca3af] mb-2">Início</label>
             <input
               type="time"
               value={inicio}
               onChange={(e) => setInicio(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white"
+              className="w-full px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] text-white"
             />
           </div>
 
           <div>
-            <label className="block text-zinc-300 mb-2">Fim</label>
+            <label className="block text-[#9ca3af] mb-2">Fim</label>
             <input
               type="time"
               value={fim}
               onChange={(e) => setFim(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white"
+              className="w-full px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] text-white"
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ function MeusHorarios() {
       {loading && <p className="text-white">Carregando horários...</p>}
 
       {!loading && horarios.length === 0 && (
-        <p className="text-zinc-200 mb-8">
+        <p className="text-white mb-8">
           Nenhum horário disponível nesse dia.
         </p>
       )}
@@ -175,21 +175,21 @@ function MeusHorarios() {
         {horarios.map((horario) => (
           <div
             key={horario.id}
-            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white shadow-lg"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white shadow-lg"
           >
             <p className="text-xl font-semibold text-[#c59d5f] mb-3">
               Horário disponível
             </p>
 
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               <strong>Início:</strong> {formatarDataHora(horario.inicio)}
             </p>
 
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               <strong>Fim:</strong> {formatarDataHora(horario.fim)}
             </p>
 
-            <div className="mt-4 pt-4 border-t border-slate-800">
+            <div className="mt-4 pt-4 border-t border-[#1f1f23]">
               <span className="text-xs bg-emerald-500 text-black px-3 py-1 rounded-full font-semibold">
                 {horario.status}
               </span>

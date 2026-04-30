@@ -56,7 +56,7 @@ function Agendamentos() {
 
 
             {agendamentos.length === 0 && (
-                <p className="text-zinc-200">
+                <p className="text-white">
                     Nenhum agendamento encontrado
                 </p>
             )}
@@ -75,9 +75,9 @@ function Agendamentos() {
                     <div
                         key={agendamento.id}
                         className="
-                            bg-slate-950/80
+                            bg-[#0b0b0c]/80
                             border
-                            border-slate-800
+                            border-[#1f1f23]
                             rounded-2xl
                             p-5
                             shadow-lg
@@ -96,11 +96,11 @@ function Agendamentos() {
                             {agendamento.nome}
                         </p>
 
-                        <p className="text-zinc-300 mt-2">
+                        <p className="text-[#9ca3af] mt-2">
                             <strong>Email:</strong> {agendamento.email}
                         </p>
 
-                        <p className="text-zinc-300">
+                        <p className="text-[#9ca3af]">
                             <strong>Telefone:</strong> {agendamento.telefone}
                         </p>
 
@@ -108,7 +108,7 @@ function Agendamentos() {
                             mt-4
                             pt-4
                             border-t
-                            border-slate-800
+                            border-[#1f1f23]
                             ">
                             <span className="
                                 text-xs

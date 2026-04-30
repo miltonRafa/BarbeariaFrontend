@@ -27,7 +27,7 @@ function LayoutAdmin() {
       ${
         active
           ? "bg-[#c59d5f]/20 text-[#c59d5f] border-[#c59d5f]/60 shadow-[inset_3px_0_0_#c59d5f]"
-          : "text-zinc-300 border-transparent hover:bg-white/5 hover:text-[#c59d5f]"
+          : "text-[#9ca3af] border-transparent hover:bg-white/5 hover:text-[#c59d5f]"
       }
     `;
   };
@@ -57,7 +57,7 @@ function LayoutAdmin() {
             HONORATO
           </h2>
 
-          <p className="text-zinc-400 text-sm mt-1">
+          <p className="text-[#9ca3af] text-sm mt-1">
             Barber Management
           </p>
         </div>
@@ -136,8 +136,8 @@ function LayoutAdmin() {
           backgroundImage: "url('/barbearia-bg.png')",
         }}
       >
-        <div className="absolute inset-0 bg-black/75"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/65 to-black/80"></div>
+        <div className="absolute inset-0 bg-black/35"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/30 to-black/40"></div>
 
         <div className="relative z-10 px-5 py-6 lg:px-14 lg:py-10">
           <div className="max-w-7xl">

@@ -65,7 +65,7 @@ function ServicosDashboard() {
 
       <form
         onSubmit={salvarServico}
-        className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-8"
+        className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-8"
       >
         <h2 className="text-xl font-semibold text-white mb-4">
           Cadastrar serviço
@@ -76,7 +76,7 @@ function ServicosDashboard() {
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             placeholder="Nome do serviço"
-            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+            className="px-4 py-3 rounded-xl bg-[#121214] text-white border border-[#1f1f23]"
           />
 
           <input
@@ -85,7 +85,7 @@ function ServicosDashboard() {
             placeholder="Preço"
             type="number"
             step="0.01"
-            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+            className="px-4 py-3 rounded-xl bg-[#121214] text-white border border-[#1f1f23]"
           />
 
           <input
@@ -93,14 +93,14 @@ function ServicosDashboard() {
             onChange={(e) => setDuracaoMinutos(e.target.value)}
             placeholder="Duração em minutos"
             type="number"
-            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+            className="px-4 py-3 rounded-xl bg-[#121214] text-white border border-[#1f1f23]"
           />
 
           <input
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             placeholder="Descrição"
-            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+            className="px-4 py-3 rounded-xl bg-[#121214] text-white border border-[#1f1f23]"
           />
         </div>
 
@@ -120,7 +120,7 @@ function ServicosDashboard() {
         {servicos.map((servico) => (
           <div
             key={servico.id}
-            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white"
           >
             <p className="text-lg font-semibold">{servico.nome}</p>
             <p className="text-sm opacity-80">{servico.descricao}</p>

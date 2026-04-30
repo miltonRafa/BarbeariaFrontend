@@ -92,7 +92,7 @@ function Funcionarios() {
 
       <form
         onSubmit={cadastrarFuncionario}
-        className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-8 text-white"
+        className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-8 text-white"
       >
         <h2 className="text-xl font-semibold text-[#c59d5f] mb-4">
           Cadastrar funcionário
@@ -104,7 +104,7 @@ function Funcionarios() {
             onChange={(e) => setNome(e.target.value)}
             placeholder="Nome"
             disabled={salvando}
-            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 disabled:opacity-50"
+            className="px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
           />
 
           <input
@@ -113,7 +113,7 @@ function Funcionarios() {
             placeholder="Email"
             type="email"
             disabled={salvando}
-            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 disabled:opacity-50"
+            className="px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
           />
 
           <input
@@ -122,7 +122,7 @@ function Funcionarios() {
             placeholder="Senha"
             type="password"
             disabled={salvando}
-            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 disabled:opacity-50"
+            className="px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
           />
         </div>
 
@@ -136,20 +136,20 @@ function Funcionarios() {
       </form>
 
       {funcionarios.length === 0 && (
-        <p className="text-zinc-200">Nenhum funcionário encontrado.</p>
+        <p className="text-white">Nenhum funcionário encontrado.</p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {funcionarios.map((funcionario) => (
           <div
             key={funcionario.id}
-            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white shadow-lg"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white shadow-lg"
           >
             <p className="text-xl font-semibold text-[#c59d5f]">
               {funcionario.nome}
             </p>
 
-            <p className="text-zinc-300 mt-2">
+            <p className="text-[#9ca3af] mt-2">
               <strong>Email:</strong> {funcionario.email}
             </p>
           </div>

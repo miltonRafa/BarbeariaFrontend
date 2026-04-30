@@ -154,11 +154,11 @@ function Agendar() {
         Agendar Horário
       </h1>
 
-      <p className="text-zinc-300 mb-8">
+      <p className="text-[#9ca3af] mb-8">
         Escolha o profissional, serviço, dia e horário disponível.
       </p>
 
-      <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+      <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
         <h2 className="text-xl font-semibold text-white mb-4">
           1. Profissional
         </h2>
@@ -176,7 +176,7 @@ function Agendar() {
               }}
               className={`text-left p-5 rounded-2xl border transition ${funcionarioSelecionado?.id === funcionario.id
                   ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                  : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                  : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                 }`}
             >
               <p className="text-lg font-bold">{funcionario.nome}</p>
@@ -189,13 +189,13 @@ function Agendar() {
       </section>
 
       {funcionarioSelecionado && (
-        <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             2. Serviço
           </h2>
 
           {servicosDoFuncionario.length === 0 ? (
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-[#9ca3af]">
               Este funcionário ainda não possui serviços vinculados.
             </p>
           ) : (
@@ -210,7 +210,7 @@ function Agendar() {
                   }}
                   className={`text-left p-5 rounded-2xl border transition ${servicoSelecionado?.id === servico.id
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                      : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                      : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
                 >
                   <p className="text-lg font-bold">{servico.nome}</p>
@@ -226,7 +226,7 @@ function Agendar() {
       )}
 
       {funcionarioSelecionado && servicoSelecionado && (
-        <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             3. Dia
           </h2>
@@ -245,7 +245,7 @@ function Agendar() {
                   }}
                   className={`min-w-[72px] rounded-2xl border px-3 py-3 text-center transition ${selecionada
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                      : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                      : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
                 >
                   <p className="text-xs font-semibold capitalize">
@@ -261,17 +261,17 @@ function Agendar() {
       )}
 
       {funcionarioSelecionado && servicoSelecionado && (
-        <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             4. Horário
           </h2>
 
           {loadingHorarios && (
-            <p className="text-zinc-300">Carregando horários...</p>
+            <p className="text-[#9ca3af]">Carregando horários...</p>
           )}
 
           {!loadingHorarios && horarios.length === 0 && (
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               Nenhum horário disponível nesse dia.
             </p>
           )}
@@ -284,7 +284,7 @@ function Agendar() {
                   onClick={() => setHorarioSelecionado(horario)}
                   className={`px-5 py-3 rounded-xl border font-bold transition ${horarioSelecionado?.id === horario.id
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                      : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                      : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
                 >
                   {formatarHora(horario.inicio)}
@@ -296,9 +296,9 @@ function Agendar() {
       )}
 
       {horarioSelecionado && (
-        <div className="bg-black/90 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="bg-black/90 border border-[#1f1f23] rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <p className="text-zinc-300 text-sm">Resumo</p>
+            <p className="text-[#9ca3af] text-sm">Resumo</p>
             <p className="text-white font-semibold">
               {funcionarioSelecionado?.nome} • {servicoSelecionado?.nome} •{" "}
               {formatarHora(horarioSelecionado.inicio)}

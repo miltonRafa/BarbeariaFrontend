@@ -9,13 +9,13 @@ function LayoutCaixa() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+    <div className="min-h-screen bg-[#1a1a1d] text-white flex flex-col">
       
       {/* HEADER */}
-      <header className="bg-black border-b border-slate-800 px-4 py-4 flex justify-between items-center">
+      <header className="bg-black border-b border-[#1f1f23] px-4 py-4 flex justify-between items-center">
         <div>
           <h1 className="text-xl font-bold text-[#c59d5f]">Caixa</h1>
-          <p className="text-xs text-slate-400">Operação diária</p>
+          <p className="text-xs text-[#9ca3af]">Operação diária</p>
         </div>
 
         <button

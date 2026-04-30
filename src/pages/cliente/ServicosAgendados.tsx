@@ -42,7 +42,7 @@ function ServicosAgendados() {
       </h1>
 
       {agendamentos.length === 0 && (
-        <p className="text-zinc-200">
+        <p className="text-white">
           Nenhum serviço agendado encontrado.
         </p>
       )}
@@ -51,38 +51,38 @@ function ServicosAgendados() {
         {agendamentos.map((agendamento) => (
           <div
             key={agendamento.id}
-            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 shadow-lg text-white hover:border-[#c59d5f] transition"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 shadow-lg text-white hover:border-[#c59d5f] transition"
           >
             <p className="text-xl font-semibold text-[#c59d5f] mb-3">
               Agendamento #{agendamento.id}
             </p>
 
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               <strong>Funcionário:</strong>{" "}
               {agendamento.funcionario ?? "Não informado"}
             </p>
 
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               <strong>Data:</strong>{" "}
               {agendamento.data
                 ? agendamento.data.split("-").reverse().join("/")
                 : "Não informado"}
             </p>
 
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               {agendamento.horaInicio
               ? agendamento.horaInicio.substring(0, 5)
               : "Não informado"}
             </p>
 
-            <p className="text-zinc-300">
+            <p className="text-[#9ca3af]">
               <strong>Valor:</strong>{" "}
               {agendamento.valorTotal !== undefined
                 ? `R$ ${agendamento.valorTotal}`
                 : "Não informado"}
             </p>
 
-            <div className="mt-4 pt-4 border-t border-slate-800">
+            <div className="mt-4 pt-4 border-t border-[#1f1f23]">
               <span className="text-xs bg-[#c59d5f] text-black px-3 py-1 rounded-full font-semibold">
                 {agendamento.status ?? "AGENDADO"}
               </span>

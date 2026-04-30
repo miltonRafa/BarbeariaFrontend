@@ -31,8 +31,8 @@ function Expediente() {
         Expediente
       </h1>
 
-      <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white">
-        <p className="text-zinc-300 mb-5">
+      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white">
+        <p className="text-[#9ca3af] mb-5">
           Use esta opção para encerrar o expediente do dia.
         </p>
 

@@ -109,14 +109,14 @@ function MeusServicos() {
         Meus Serviços
       </h1>
 
-      <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white mb-6">
-        <p className="text-zinc-300">
+      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white mb-6">
+        <p className="text-[#9ca3af]">
           Selecione os serviços que você realiza na barbearia.
         </p>
       </div>
 
       {servicos.length === 0 && (
-        <p className="text-zinc-300 mb-6">
+        <p className="text-[#9ca3af] mb-6">
           Nenhum serviço cadastrado pela empresa.
         </p>
       )}
@@ -132,7 +132,7 @@ function MeusServicos() {
               className={`text-left rounded-2xl p-5 border transition ${
                 selecionado
                   ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                  : "bg-slate-950/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                  : "bg-[#0b0b0c]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
               }`}
             >
               <p className="text-xl font-semibold mb-2">{servico.nome}</p>
@@ -169,7 +169,7 @@ function MeusServicos() {
       </h2>
 
       {meusServicos.length === 0 && (
-        <p className="text-zinc-300 mb-6">
+        <p className="text-[#9ca3af] mb-6">
           Nenhum serviço atribuído ainda.
         </p>
       )}
@@ -178,14 +178,14 @@ function MeusServicos() {
         {meusServicos.map((servico) => (
           <div
             key={servico.id}
-            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white"
           >
             <p className="text-xl font-semibold text-[#c59d5f] mb-2">
               {servico.nome}
             </p>
 
             {servico.descricao && (
-              <p className="text-sm text-zinc-300 mb-2">
+              <p className="text-sm text-[#9ca3af] mb-2">
                 {servico.descricao}
               </p>
             )}

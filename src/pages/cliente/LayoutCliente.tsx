@@ -13,16 +13,16 @@ function LayoutCliente() {
     `flex items-center justify-center px-4 py-3 rounded-xl font-semibold transition ${
       location.pathname === path
         ? "bg-[#c59d5f] text-black"
-        : "text-white hover:bg-slate-800"
+        : "text-white hover:bg-[#1f1f23]"
     }`;
 
   return (
     <div className="min-h-screen bg-[linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.75)),url('/barbearia-bg.jpg')] bg-cover bg-center bg-fixed text-white">
-      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur border-b border-slate-800">
+      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur border-b border-[#1f1f23]">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-[#c59d5f]">Barbearia</h1>
-            <p className="text-xs text-slate-300">Área do cliente</p>
+            <p className="text-xs text-[#9ca3af]">Área do cliente</p>
           </div>
 
           <button
@@ -39,7 +39,7 @@ function LayoutCliente() {
       </main>
 
       {/* Menu desktop */}
-      <nav className="hidden md:flex fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-black/90 border border-slate-800 rounded-2xl p-2 gap-2 shadow-xl">
+      <nav className="hidden md:flex fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-black/90 border border-[#1f1f23] rounded-2xl p-2 gap-2 shadow-xl">
         <Link to="/cliente/agendar" className={linkClass("/cliente/agendar")}>
           Novo agendamento
         </Link>
@@ -60,7 +60,7 @@ function LayoutCliente() {
       </nav>
 
       {/* Menu mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/95 border-t border-slate-800 px-3 py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/95 border-t border-[#1f1f23] px-3 py-2">
         <div className="grid grid-cols-3 gap-2">
           <Link
             to="/cliente/agendar"

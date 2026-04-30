@@ -76,7 +76,7 @@ function AgendaAdmin() {
       </div>
 
       <div className="bg-[#121214]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 mb-6">
-        <p className="text-zinc-400 mb-4">
+        <p className="text-[#9ca3af] mb-4">
           Gerencie os dados do funcionário selecionado.
         </p>
 
