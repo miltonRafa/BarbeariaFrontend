@@ -14,25 +14,25 @@ function Agendamentos() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        async function carregarAgendamentos() {
+            try {
+                const data = await listarAgendamentos();
+
+                setAgendamentos(data);
+
+            } catch (error) {
+
+                console.error("Erro ao buscar agendamentos", error);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+        }
+
         carregarAgendamentos();
     }, []);
-
-    async function carregarAgendamentos() {
-        try {
-            const data = await listarAgendamentos();
-
-            setAgendamentos(data);
-
-        } catch (error) {
-
-            console.error("Erro ao buscar agendamentos", error);
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    }
 
     if (loading) {
         return (

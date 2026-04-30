@@ -16,12 +16,12 @@ function Login() {
     if (!token) return;
 
     if (perfil === "CLIENTE") {
-      navigate("/cliente/agendar");
+      navigate("/cliente");
       return;
     }
 
     if (perfil === "FUNCIONARIO") {
-      navigate("/funcionario/agenda");
+      navigate("/funcionario");
       return;
     }
 
@@ -30,7 +30,11 @@ function Login() {
       return;
     }
 
-    navigate("/");
+    if (perfil === "ADMIN") {
+      navigate("/dashboard");
+      return;
+    }
+
   }, [navigate]);
 
   async function handleLogin(event: React.FormEvent) {
@@ -52,12 +56,12 @@ function Login() {
       }
 
       if (data.perfil === "CLIENTE") {
-        navigate("/cliente/agendar");
+        navigate("/cliente");
         return;
       }
 
       if (data.perfil === "FUNCIONARIO") {
-        navigate("/funcionario/agenda");
+        navigate("/funcionario");
         return;
       }
 
@@ -67,12 +71,11 @@ function Login() {
       }
 
       if (data.perfil === "ADMIN") {
-        navigate("/");
+        navigate("/dashboard");
         return;
       }
 
-      navigate("/");
-    } catch (error) {
+    } catch {
       setErro("Email ou senha inválidos");
     }
   }

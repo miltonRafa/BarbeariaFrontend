@@ -14,34 +14,33 @@ function Clientes() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        carregarClientes();
-    }, []);
+        async function carregarClientes() {
 
+            try {
 
-    async function carregarClientes() {
+                const data = await listarClientes();
 
-        try {
+                console.log("Clientes recebidos:", data);
 
-            const data = await listarClientes();
+                setClientes(data);
 
-            console.log("Clientes recebidos:", data);
+            } catch (error) {
 
-            setClientes(data);
+                console.error(
+                    "Erro ao buscar clientes",
+                    error
+                );
 
-        } catch (error) {
+            } finally {
 
-            console.error(
-                "Erro ao buscar clientes",
-                error
-            );
+                setLoading(false);
 
-        } finally {
-
-            setLoading(false);
+            }
 
         }
 
-    }
+        carregarClientes();
+    }, []);
 
 
     if (loading) {

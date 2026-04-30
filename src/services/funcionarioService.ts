@@ -1,14 +1,30 @@
 import { api } from "./api";
 
-export const listarFuncionarios = async () => {
+export async function criarFuncionario(data: { usuarioId: number }) {
+  const response = await api.post("/funcionarios", data);
+  return response.data;
+}
+
+export async function atribuirServicosAoFuncionario(
+  funcionarioId: number,
+  servicoIds: number[],
+) {
+  const response = await api.put(`/funcionarios/${funcionarioId}/servicos`, {
+    servicoIds,
+  });
+
+  return response.data;
+}
+
+export async function listarFuncionarios() {
   const response = await api.get("/funcionarios");
   return response.data;
-};
+}
 
-export const listarHorariosDisponiveis = async (
+export async function listarHorariosDisponiveis(
   funcionarioId: number,
-  data: string
-) => {
+  data: string,
+) {
   const response = await api.get("/horarios-disponiveis", {
     params: {
       funcionarioId,
@@ -17,4 +33,4 @@ export const listarHorariosDisponiveis = async (
   });
 
   return response.data;
-};
+}

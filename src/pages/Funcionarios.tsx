@@ -1,30 +1,82 @@
 import { useEffect, useState } from "react";
-import { listarFuncionarios } from "../services/funcionarioService";
+import {
+  listarFuncionarios,
+  criarFuncionario,
+} from "../services/funcionarioService";
+import { criarUsuario } from "../services/usuarioService";
 
 type Funcionario = {
   id: number;
   nome: string;
   email: string;
-  especialidade: string;
 };
 
 function Funcionarios() {
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [loading, setLoading] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("123456");
 
   useEffect(() => {
-    carregarFuncionarios();
+    async function carregar() {
+      try {
+        const data = await listarFuncionarios();
+        setFuncionarios(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Erro ao carregar funcionários", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregar();
   }, []);
 
-  async function carregarFuncionarios() {
+  async function recarregarFuncionarios() {
+    const data = await listarFuncionarios();
+    setFuncionarios(Array.isArray(data) ? data : []);
+  }
+
+  async function cadastrarFuncionario(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (salvando) return;
+
     try {
-      const data = await listarFuncionarios();
-      console.log("Funcionários recebidos:", data);
-      setFuncionarios(data);
+      setSalvando(true);
+
+      if (!nome.trim() || !email.trim() || !senha.trim()) {
+        alert("Preencha nome, email e senha.");
+        return;
+      }
+
+      const usuario = await criarUsuario({
+        nome: nome.trim(),
+        email: email.trim(),
+        senha,
+        perfil: "FUNCIONARIO",
+        ativo: true,
+      });
+
+      await criarFuncionario({
+        usuarioId: usuario.id,
+      });
+
+      alert("Funcionário cadastrado com sucesso!");
+
+      setNome("");
+      setEmail("");
+      setSenha("123456");
+
+      await recarregarFuncionarios();
     } catch (error) {
-      console.error("Erro ao buscar funcionários", error);
+      console.error("Erro ao cadastrar funcionário", error);
+      alert("Erro ao cadastrar funcionário. Verifique se o email já existe.");
     } finally {
-      setLoading(false);
+      setSalvando(false);
     }
   }
 
@@ -38,8 +90,53 @@ function Funcionarios() {
         Funcionários
       </h1>
 
+      <form
+        onSubmit={cadastrarFuncionario}
+        className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-8 text-white"
+      >
+        <h2 className="text-xl font-semibold text-[#c59d5f] mb-4">
+          Cadastrar funcionário
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Nome"
+            disabled={salvando}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 disabled:opacity-50"
+          />
+
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            type="email"
+            disabled={salvando}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 disabled:opacity-50"
+          />
+
+          <input
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            placeholder="Senha"
+            type="password"
+            disabled={salvando}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 disabled:opacity-50"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={salvando}
+          className="mt-5 bg-[#c59d5f] hover:bg-[#d6ae70] disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold px-6 py-3 rounded-xl"
+        >
+          {salvando ? "Cadastrando..." : "Cadastrar funcionário"}
+        </button>
+      </form>
+
       {funcionarios.length === 0 && (
-        <p className="text-zinc-200">Nenhum funcionário encontrado</p>
+        <p className="text-zinc-200">Nenhum funcionário encontrado.</p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -54,10 +151,6 @@ function Funcionarios() {
 
             <p className="text-zinc-300 mt-2">
               <strong>Email:</strong> {funcionario.email}
-            </p>
-
-            <p className="text-zinc-300">
-              <strong>Especialidade:</strong> {funcionario.especialidade}
             </p>
           </div>
         ))}
