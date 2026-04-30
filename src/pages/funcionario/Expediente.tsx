@@ -1,6 +1,28 @@
+import { encerrarExpediente } from "../../services/horarioDisponivelService";
+
 function Expediente() {
-  function encerrarExpediente() {
-    alert("Funcionalidade de encerrar expediente ainda será integrada ao backend.");
+  async function encerrar() {
+    const funcionarioId = Number(localStorage.getItem("funcionarioId"));
+
+    if (!funcionarioId) {
+      alert("Funcionário não identificado.");
+      return;
+    }
+
+    const hoje = new Date().toISOString().split("T")[0];
+
+    if (!confirm("Tem certeza que deseja encerrar o expediente de hoje?")) {
+      return;
+    }
+
+    try {
+      await encerrarExpediente(funcionarioId, hoje);
+
+      alert("Expediente encerrado com sucesso!");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao encerrar expediente.");
+    }
   }
 
   return (
@@ -15,7 +37,7 @@ function Expediente() {
         </p>
 
         <button
-          onClick={encerrarExpediente}
+          onClick={encerrar}
           className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl"
         >
           Encerrar expediente

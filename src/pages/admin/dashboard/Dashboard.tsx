@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { criarServico, listarServicos } from "../../../services/dashboard/servicoService";
+import { criarServico, listarServicos } from "../../../services/servicoService";
 
 type Servico = {
   id: number;

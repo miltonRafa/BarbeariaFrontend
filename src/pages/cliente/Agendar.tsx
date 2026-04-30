@@ -26,6 +26,8 @@ type HorarioDisponivel = {
 };
 
 function Agendar() {
+  const hoje = new Date().toISOString().split("T")[0];
+
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
   const [horarios, setHorarios] = useState<HorarioDisponivel[]>([]);
 
@@ -35,9 +37,11 @@ function Agendar() {
   const [servicoSelecionado, setServicoSelecionado] =
     useState<Servico | null>(null);
 
-  const [dataSelecionada, setDataSelecionada] = useState("");
+  const [dataSelecionada, setDataSelecionada] = useState(hoje);
   const [horarioSelecionado, setHorarioSelecionado] =
     useState<HorarioDisponivel | null>(null);
+
+  const [loadingHorarios, setLoadingHorarios] = useState(false);
 
   useEffect(() => {
     async function carregarDados() {
@@ -48,121 +52,168 @@ function Agendar() {
     carregarDados();
   }, []);
 
-  async function buscarHorarios() {
-    if (!funcionarioSelecionado || !dataSelecionada) {
-      alert("Selecione funcionário e data.");
-      return;
+  useEffect(() => {
+    if (funcionarioSelecionado && servicoSelecionado && dataSelecionada) {
+      buscarHorarios();
     }
+  }, [funcionarioSelecionado, servicoSelecionado, dataSelecionada]);
 
-    const data = await listarHorariosDisponiveis(
-      funcionarioSelecionado.id,
-      dataSelecionada,
-    );
+  const servicosDoFuncionario = funcionarioSelecionado?.servicos ?? [];
 
-    const listaHorarios: HorarioDisponivel[] = Array.isArray(data) ? data : [];
+  function gerarDias() {
+    return Array.from({ length: 10 }).map((_, index) => {
+      const data = new Date();
+      data.setDate(data.getDate() + index);
 
-    const horariosDoFuncionario = listaHorarios.filter(
-      (horario) =>
-        !horario.funcionarioId ||
-        horario.funcionarioId === funcionarioSelecionado.id,
-    );
+      return {
+        valor: data.toISOString().split("T")[0],
+        dia: data.getDate(),
+        mes: data.toLocaleDateString("pt-BR", { month: "short" }),
+        semana: data.toLocaleDateString("pt-BR", { weekday: "short" }),
+      };
+    });
+  }
 
-    setHorarios(horariosDoFuncionario);
-    setHorarioSelecionado(null);
+  function formatarHora(dataHora: string) {
+    const [, horaCompleta] = dataHora.split("T");
+    return horaCompleta?.substring(0, 5);
+  }
+
+  async function buscarHorarios() {
+    if (!funcionarioSelecionado || !dataSelecionada) return;
+
+    try {
+      setLoadingHorarios(true);
+
+      const data = await listarHorariosDisponiveis(
+        funcionarioSelecionado.id,
+        dataSelecionada
+      );
+
+      const listaHorarios: HorarioDisponivel[] = Array.isArray(data) ? data : [];
+
+      const horariosDoFuncionario = listaHorarios.filter(
+        (horario) =>
+          !horario.funcionarioId ||
+          horario.funcionarioId === funcionarioSelecionado.id
+      );
+
+      setHorarios(horariosDoFuncionario);
+      setHorarioSelecionado(null);
+    } catch (error) {
+      console.error("Erro ao buscar horários", error);
+      alert("Erro ao buscar horários disponíveis.");
+    } finally {
+      setLoadingHorarios(false);
+    }
   }
 
   async function confirmarAgendamento() {
+    const clienteId = Number(localStorage.getItem("clienteId"));
+
+    console.log("clienteId:", clienteId);
+    console.log("funcionario:", funcionarioSelecionado);
+    console.log("servico:", servicoSelecionado);
+    console.log("horario:", horarioSelecionado);
+
+    if (!clienteId) {
+      alert("Cliente não identificado. Faça login novamente.");
+      return;
+    }
+
     if (!funcionarioSelecionado || !servicoSelecionado || !horarioSelecionado) {
       alert("Selecione funcionário, serviço e horário.");
       return;
     }
 
-    if (
-      horarioSelecionado.funcionarioId &&
-      horarioSelecionado.funcionarioId !== funcionarioSelecionado.id
-    ) {
-      alert("Esse horário não pertence ao funcionário selecionado.");
-      return;
+    try {
+      const resposta = await criarAgendamento({
+        clienteId,
+        funcionarioId: funcionarioSelecionado.id,
+        servicosIds: [servicoSelecionado.id],
+        horarioDisponivelId: horarioSelecionado.id,
+      });
+
+      console.log("Agendamento criado:", resposta);
+
+      alert("Agendamento realizado com sucesso!");
+
+      setServicoSelecionado(null);
+      setDataSelecionada(hoje);
+      setHorarios([]);
+      setHorarioSelecionado(null);
+    } catch (error) {
+      console.error("Erro ao criar agendamento:", error);
+      alert("Erro ao criar agendamento.");
     }
-
-    await criarAgendamento({
-      clienteId: 1,
-      funcionarioId: funcionarioSelecionado.id,
-      servicosIds: [servicoSelecionado.id],
-      horarioDisponivelId: horarioSelecionado.id,
-    });
-
-    alert("Agendamento realizado com sucesso!");
-
-    setServicoSelecionado(null);
-    setDataSelecionada("");
-    setHorarios([]);
-    setHorarioSelecionado(null);
   }
 
-  const servicosDoFuncionario = funcionarioSelecionado?.servicos ?? [];
-
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-[#c59d5f] mb-6">
+    <div className="pb-28">
+      <h1 className="text-3xl font-bold text-[#c59d5f] mb-2">
         Agendar Horário
       </h1>
 
-      <h2 className="text-xl font-semibold text-white mb-3">
-        1. Escolha o profissional
-      </h2>
+      <p className="text-zinc-300 mb-8">
+        Escolha o profissional, serviço, dia e horário disponível.
+      </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {funcionarios.map((funcionario) => (
-          <button
-            key={funcionario.id}
-            onClick={() => {
-              setFuncionarioSelecionado(funcionario);
-              setServicoSelecionado(null);
-              setDataSelecionada("");
-              setHorarios([]);
-              setHorarioSelecionado(null);
-            }}
-            className={`text-left p-5 rounded-2xl border transition ${
-              funcionarioSelecionado?.id === funcionario.id
-                ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                : "bg-slate-950/80 text-white border-slate-800 hover:border-[#c59d5f]"
-            }`}
-          >
-            <p className="text-lg font-semibold">{funcionario.nome}</p>
+      <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+        <h2 className="text-xl font-semibold text-white mb-4">
+          1. Profissional
+        </h2>
 
-          </button>
-        ))}
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {funcionarios.map((funcionario) => (
+            <button
+              key={funcionario.id}
+              onClick={() => {
+                setFuncionarioSelecionado(funcionario);
+                setServicoSelecionado(null);
+                setDataSelecionada(hoje);
+                setHorarios([]);
+                setHorarioSelecionado(null);
+              }}
+              className={`text-left p-5 rounded-2xl border transition ${funcionarioSelecionado?.id === funcionario.id
+                  ? "bg-[#c59d5f] text-black border-[#c59d5f]"
+                  : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                }`}
+            >
+              <p className="text-lg font-bold">{funcionario.nome}</p>
+              <p className="text-sm opacity-80">
+                {funcionario.servicos?.length ?? 0} serviços disponíveis
+              </p>
+            </button>
+          ))}
+        </div>
+      </section>
 
       {funcionarioSelecionado && (
-        <>
-          <h2 className="text-xl font-semibold text-white mb-3">
-            2. Escolha o serviço
+        <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            2. Serviço
           </h2>
 
           {servicosDoFuncionario.length === 0 ? (
-            <p className="text-sm text-slate-300 mb-8">
+            <p className="text-sm text-slate-300">
               Este funcionário ainda não possui serviços vinculados.
             </p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {servicosDoFuncionario.map((servico) => (
                 <button
                   key={servico.id}
                   onClick={() => {
                     setServicoSelecionado(servico);
-                    setDataSelecionada("");
                     setHorarios([]);
                     setHorarioSelecionado(null);
                   }}
-                  className={`text-left p-5 rounded-2xl border transition ${
-                    servicoSelecionado?.id === servico.id
+                  className={`text-left p-5 rounded-2xl border transition ${servicoSelecionado?.id === servico.id
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                      : "bg-slate-950/80 text-white border-slate-800 hover:border-[#c59d5f]"
-                  }`}
+                      : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                    }`}
                 >
-                  <p className="text-lg font-semibold">{servico.nome}</p>
+                  <p className="text-lg font-bold">{servico.nome}</p>
                   <p className="text-sm opacity-80">R$ {servico.preco}</p>
                   <p className="text-sm opacity-80">
                     {servico.duracao ?? `${servico.duracaoMinutos ?? 0} min`}
@@ -171,69 +222,96 @@ function Agendar() {
               ))}
             </div>
           )}
-        </>
+        </section>
       )}
 
       {funcionarioSelecionado && servicoSelecionado && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-white mb-3">
-            3. Escolha a data
+        <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            3. Dia
           </h2>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="date"
-              value={dataSelecionada}
-              onChange={(e) => {
-                setDataSelecionada(e.target.value);
-                setHorarios([]);
-                setHorarioSelecionado(null);
-              }}
-              className="px-4 py-3 rounded-xl bg-slate-950/80 text-white border border-slate-800"
-            />
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {gerarDias().map((data) => {
+              const selecionada = dataSelecionada === data.valor;
 
-            <button
-              onClick={buscarHorarios}
-              className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-semibold px-5 py-3 rounded-xl"
-            >
-              Ver horários
-            </button>
+              return (
+                <button
+                  key={data.valor}
+                  onClick={() => {
+                    setDataSelecionada(data.valor);
+                    setHorarios([]);
+                    setHorarioSelecionado(null);
+                  }}
+                  className={`min-w-[72px] rounded-2xl border px-3 py-3 text-center transition ${selecionada
+                      ? "bg-[#c59d5f] text-black border-[#c59d5f]"
+                      : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                    }`}
+                >
+                  <p className="text-xs font-semibold capitalize">
+                    {data.semana.replace(".", "")}
+                  </p>
+                  <p className="text-2xl font-bold">{data.dia}</p>
+                  <p className="text-xs capitalize">{data.mes.replace(".", "")}</p>
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </section>
       )}
 
-      {horarios.length > 0 && (
-        <>
-          <h2 className="text-xl font-semibold text-white mb-3">
-            4. Escolha o horário
+      {funcionarioSelecionado && servicoSelecionado && (
+        <section className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            4. Horário
           </h2>
 
-          <div className="flex flex-wrap gap-3 mb-8">
-            {horarios.map((horario) => (
-              <button
-                key={horario.id}
-                onClick={() => setHorarioSelecionado(horario)}
-                className={`px-5 py-3 rounded-xl border transition ${
-                  horarioSelecionado?.id === horario.id
-                    ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                    : "bg-slate-950/80 text-white border-slate-800 hover:border-[#c59d5f]"
-                }`}
-              >
-                {new Date(horario.inicio).toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </button>
-            ))}
+          {loadingHorarios && (
+            <p className="text-zinc-300">Carregando horários...</p>
+          )}
+
+          {!loadingHorarios && horarios.length === 0 && (
+            <p className="text-zinc-300">
+              Nenhum horário disponível nesse dia.
+            </p>
+          )}
+
+          {!loadingHorarios && horarios.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {horarios.map((horario) => (
+                <button
+                  key={horario.id}
+                  onClick={() => setHorarioSelecionado(horario)}
+                  className={`px-5 py-3 rounded-xl border font-bold transition ${horarioSelecionado?.id === horario.id
+                      ? "bg-[#c59d5f] text-black border-[#c59d5f]"
+                      : "bg-slate-900/80 text-white border-slate-800 hover:border-[#c59d5f]"
+                    }`}
+                >
+                  {formatarHora(horario.inicio)}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {horarioSelecionado && (
+        <div className="bg-black/90 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <p className="text-zinc-300 text-sm">Resumo</p>
+            <p className="text-white font-semibold">
+              {funcionarioSelecionado?.nome} • {servicoSelecionado?.nome} •{" "}
+              {formatarHora(horarioSelecionado.inicio)}
+            </p>
           </div>
 
           <button
             onClick={confirmarAgendamento}
             className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-4 rounded-xl"
           >
-            Agendar horário
+            Confirmar agendamento
           </button>
-        </>
+        </div>
       )}
     </div>
   );

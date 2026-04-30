@@ -34,3 +34,8 @@ export async function listarHorariosDisponiveis(
 
   return response.data;
 }
+
+export async function listarServicosDoFuncionario(funcionarioId: number) {
+  const response = await api.get(`/funcionarios/${funcionarioId}/servicos`);
+  return response.data;
+}

@@ -19,3 +19,8 @@ export const criarAgendamento = async (dados: AgendamentoRequest) => {
   const response = await api.post("/agendamentos", dados);
   return response.data;
 };
+
+export const listarAgendamentosDoCliente = async (clienteId: number) => {
+  const response = await api.get(`/agendamentos/cliente/${clienteId}`);
+  return response.data;
+};

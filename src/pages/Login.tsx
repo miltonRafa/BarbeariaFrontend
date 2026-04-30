@@ -34,7 +34,6 @@ function Login() {
       navigate("/dashboard");
       return;
     }
-
   }, [navigate]);
 
   async function handleLogin(event: React.FormEvent) {
@@ -43,18 +42,27 @@ function Login() {
     try {
       const data = await login({ email, senha });
 
+      console.log("RESPOSTA LOGIN:", data);
+
+      // 🔥 salva dados principais
       localStorage.setItem("token", data.token);
       localStorage.setItem("nome", data.nome);
       localStorage.setItem("perfil", data.perfil);
 
+      // 🔥 salva IDs corretamente
       if (data.funcionarioId !== null && data.funcionarioId !== undefined) {
         localStorage.setItem("funcionarioId", String(data.funcionarioId));
+      } else {
+        localStorage.removeItem("funcionarioId");
       }
 
       if (data.clienteId !== null && data.clienteId !== undefined) {
         localStorage.setItem("clienteId", String(data.clienteId));
+      } else {
+        localStorage.removeItem("clienteId");
       }
 
+      // 🔥 redirecionamento
       if (data.perfil === "CLIENTE") {
         navigate("/cliente");
         return;

@@ -5,7 +5,7 @@ type LoginRequest = {
   senha: string;
 };
 
-export const login = async (dados: LoginRequest) => {
+export async function login(dados: LoginRequest) {
   const response = await api.post("/auth/login", dados);
   return response.data;
-};
+}

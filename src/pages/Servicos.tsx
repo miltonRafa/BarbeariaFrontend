@@ -1,122 +1,133 @@
 import { useEffect, useState } from "react";
-import { listarServicos } from "../services/servicoService";
+import { criarServico, listarServicos } from "../services/servicoService";
 
 type Servico = {
   id: number;
   nome: string;
+  descricao: string;
   preco: number;
-  duracao: string;
+  duracaoMinutos: number;
+  ativo: boolean;
 };
 
-function Servicos() {
+function ServicosDashboard() {
   const [servicos, setServicos] = useState<Servico[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const [nome, setNome] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [preco, setPreco] = useState("");
+  const [duracaoMinutos, setDuracaoMinutos] = useState("");
+
+  async function carregarServicos() {
+        const data = await listarServicos();
+        setServicos(Array.isArray(data) ? data : []);
+    }
 
   useEffect(() => {
     async function carregarServicos() {
-      try {
         const data = await listarServicos();
-
-        console.log("Serviços recebidos:", data);
-
-        setServicos(data);
-      } catch (error) {
-        console.error("Erro ao buscar serviços", error);
-      } finally {
-        setLoading(false);
-      }
+        setServicos(Array.isArray(data) ? data : []);
     }
-
     carregarServicos();
   }, []);
 
-  
+  async function salvarServico(e: React.FormEvent) {
+    e.preventDefault();
 
-  if (loading) {
-    return <p className="text-white text-lg">Carregando...</p>;
+    if (!nome || !preco || !duracaoMinutos) {
+      alert("Preencha nome, preço e duração.");
+      return;
+    }
+
+    await criarServico({
+      nome,
+      descricao,
+      preco: Number(preco),
+      duracaoMinutos: Number(duracaoMinutos),
+      ativo: true,
+    });
+
+    alert("Serviço criado com sucesso!");
+
+    setNome("");
+    setDescricao("");
+    setPreco("");
+    setDuracaoMinutos("");
+
+    carregarServicos();
   }
 
   return (
     <div>
-      <h1
-        className="
-                text-3xl
-                font-bold
-                text-[#c59d5f]
-                mb-6
-                "
-      >
+      <h1 className="text-3xl font-bold text-[#c59d5f] mb-6">
         Serviços
       </h1>
 
-      {servicos.length === 0 && (
-        <p className="text-zinc-200">Nenhum serviço encontrado</p>
-      )}
-
-      <div
-        className="
-                grid
-                grid-cols-1
-                md:grid-cols-2
-                lg:grid-cols-3
-                gap-5
-                "
+      <form
+        onSubmit={salvarServico}
+        className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 mb-8"
       >
+        <h2 className="text-xl font-semibold text-white mb-4">
+          Cadastrar serviço
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Nome do serviço"
+            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+          />
+
+          <input
+            value={preco}
+            onChange={(e) => setPreco(e.target.value)}
+            placeholder="Preço"
+            type="number"
+            step="0.01"
+            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+          />
+
+          <input
+            value={duracaoMinutos}
+            onChange={(e) => setDuracaoMinutos(e.target.value)}
+            placeholder="Duração em minutos"
+            type="number"
+            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+          />
+
+          <input
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            placeholder="Descrição"
+            className="px-4 py-3 rounded-xl bg-slate-900 text-white border border-slate-700"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="mt-5 bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-xl"
+        >
+          Salvar serviço
+        </button>
+      </form>
+
+      <h2 className="text-xl font-semibold text-white mb-3">
+        Serviços cadastrados
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {servicos.map((servico) => (
           <div
             key={servico.id}
-            className="
-                            bg-slate-950/80
-                            border
-                            border-slate-800
-                            rounded-2xl
-                            p-5
-                            shadow-lg
-                            text-white
-                            hover:border-[#c59d5f]
-                            transition
-                            "
+            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white"
           >
-            <p
-              className="
-                            text-xl
-                            font-semibold
-                            text-[#c59d5f]
-                            mb-3
-                            "
-            >
-              {servico.nome}
+            <p className="text-lg font-semibold">{servico.nome}</p>
+            <p className="text-sm opacity-80">{servico.descricao}</p>
+            <p className="text-sm opacity-80">R$ {servico.preco}</p>
+            <p className="text-sm opacity-80">
+              {servico.duracaoMinutos} min
             </p>
-
-            <p className="text-zinc-300">
-              <strong>Preço:</strong> R$ {servico.preco}
-            </p>
-
-            <p className="text-zinc-300">
-              <strong>Duração:</strong> {servico.duracao}
-            </p>
-
-            <div
-              className="
-                            mt-4
-                            pt-4
-                            border-t
-                            border-slate-800
-                            "
-            >
-              <span
-                className="
-                                text-xs
-                                bg-[#c59d5f]
-                                text-black
-                                px-3 py-1
-                                rounded-full
-                                font-semibold
-                                "
-              >
-                Serviço ativo
-              </span>
-            </div>
           </div>
         ))}
       </div>
@@ -124,4 +135,4 @@ function Servicos() {
   );
 }
 
-export default Servicos;
+export default ServicosDashboard;

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import {
+  atribuirServicosAoFuncionario,
+  listarServicosDoFuncionario,
+} from "../../services/funcionarioService";
 import { listarServicos } from "../../services/servicoService";
-import { atribuirServicosAoFuncionario } from "../../services/funcionarioService";
 
 type Servico = {
   id: number;
@@ -13,24 +16,42 @@ type Servico = {
 
 function MeusServicos() {
   const [servicos, setServicos] = useState<Servico[]>([]);
+  const [meusServicos, setMeusServicos] = useState<Servico[]>([]);
   const [servicosSelecionados, setServicosSelecionados] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function carregarServicos() {
-      try {
-        const data = await listarServicos();
-        setServicos(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Erro ao carregar serviços", error);
-        alert("Erro ao carregar serviços.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
     carregarServicos();
   }, []);
+
+  async function carregarServicos() {
+    try {
+      const funcionarioId =
+        Number(localStorage.getItem("funcionarioAgendaId")) ||
+        Number(localStorage.getItem("funcionarioId"));
+
+      const todosServicos = await listarServicos();
+      setServicos(Array.isArray(todosServicos) ? todosServicos : []);
+
+      const servicosDoFuncionario =
+        await listarServicosDoFuncionario(funcionarioId);
+
+      setMeusServicos(
+        Array.isArray(servicosDoFuncionario) ? servicosDoFuncionario : []
+      );
+
+      setServicosSelecionados(
+        Array.isArray(servicosDoFuncionario)
+          ? servicosDoFuncionario.map((servico: Servico) => servico.id)
+          : []
+      );
+    } catch (error) {
+      console.error("Erro ao carregar serviços", error);
+      alert("Erro ao carregar serviços.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function alternarServico(servicoId: number) {
     setServicosSelecionados((atual) => {
@@ -57,6 +78,20 @@ function MeusServicos() {
 
     try {
       await atribuirServicosAoFuncionario(funcionarioId, servicosSelecionados);
+
+      const servicosAtualizados =
+        await listarServicosDoFuncionario(funcionarioId);
+
+      setMeusServicos(
+        Array.isArray(servicosAtualizados) ? servicosAtualizados : []
+      );
+
+      setServicosSelecionados(
+        Array.isArray(servicosAtualizados)
+          ? servicosAtualizados.map((servico: Servico) => servico.id)
+          : []
+      );
+
       alert("Serviços atribuídos com sucesso!");
     } catch (error) {
       console.error("Erro ao atribuir serviços", error);
@@ -81,7 +116,7 @@ function MeusServicos() {
       </div>
 
       {servicos.length === 0 && (
-        <p className="text-zinc-300">
+        <p className="text-zinc-300 mb-6">
           Nenhum serviço cadastrado pela empresa.
         </p>
       )}
@@ -124,10 +159,47 @@ function MeusServicos() {
 
       <button
         onClick={salvarServicos}
-        className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-xl"
+        className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-xl mb-10"
       >
         Salvar meus serviços
       </button>
+
+      <h2 className="text-2xl font-bold text-[#c59d5f] mb-4">
+        Meus serviços atribuídos
+      </h2>
+
+      {meusServicos.length === 0 && (
+        <p className="text-zinc-300 mb-6">
+          Nenhum serviço atribuído ainda.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {meusServicos.map((servico) => (
+          <div
+            key={servico.id}
+            className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 text-white"
+          >
+            <p className="text-xl font-semibold text-[#c59d5f] mb-2">
+              {servico.nome}
+            </p>
+
+            {servico.descricao && (
+              <p className="text-sm text-zinc-300 mb-2">
+                {servico.descricao}
+              </p>
+            )}
+
+            <p className="text-sm">
+              <strong>Preço:</strong> R$ {servico.preco}
+            </p>
+
+            <p className="text-sm">
+              <strong>Duração:</strong> {servico.duracaoMinutos} min
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

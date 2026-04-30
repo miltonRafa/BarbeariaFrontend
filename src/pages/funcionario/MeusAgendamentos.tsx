@@ -3,11 +3,12 @@ import { listarAgendamentos } from "../../services/agendamentoService";
 
 type Agendamento = {
   id: number;
-  clienteNome?: string;
-  servicoNome?: string;
-  inicio?: string;
-  fim?: string;
+  cliente?: string;
+  funcionario?: string;
+  data?: string;
+  horaInicio?: string;
   status?: string;
+  valorTotal?: number;
 };
 
 function MeusAgendamentos() {
@@ -17,12 +18,9 @@ function MeusAgendamentos() {
   useEffect(() => {
     async function carregar() {
       try {
-        const funcionarioId = Number(localStorage.getItem("funcionarioId"));
-
-        if (!funcionarioId) {
-          alert("Funcionário não identificado.");
-          return;
-        }
+        const funcionarioId =
+          Number(localStorage.getItem("funcionarioAgendaId")) ||
+          Number(localStorage.getItem("funcionarioId"));
 
         const data = await listarAgendamentos(funcionarioId);
         setAgendamentos(Array.isArray(data) ? data : []);
@@ -55,25 +53,27 @@ function MeusAgendamentos() {
             className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 shadow-lg text-white"
           >
             <p className="text-xl font-semibold text-[#c59d5f] mb-3">
-              {agendamento.clienteNome ?? "Cliente não informado"}
+              {agendamento.cliente ?? "Cliente não informado"}
             </p>
 
             <p className="text-zinc-300">
-              <strong>Serviço:</strong>{" "}
-              {agendamento.servicoNome ?? "Não informado"}
-            </p>
-
-            <p className="text-zinc-300">
-              <strong>Início:</strong>{" "}
-              {agendamento.inicio
-                ? new Date(agendamento.inicio).toLocaleString("pt-BR")
+              <strong>Data:</strong>{" "}
+              {agendamento.data
+                ? agendamento.data.split("-").reverse().join("/")
                 : "Não informado"}
             </p>
 
             <p className="text-zinc-300">
-              <strong>Fim:</strong>{" "}
-              {agendamento.fim
-                ? new Date(agendamento.fim).toLocaleString("pt-BR")
+              <strong>Horário:</strong>{" "}
+              {agendamento.horaInicio
+                ? agendamento.horaInicio.substring(0, 5)
+                : "Não informado"}
+            </p>
+
+            <p className="text-zinc-300">
+              <strong>Valor:</strong>{" "}
+              {agendamento.valorTotal !== undefined
+                ? `R$ ${agendamento.valorTotal}`
                 : "Não informado"}
             </p>
 
