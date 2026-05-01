@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
+import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [showLogin, setShowLogin] = useState(false);
   const [erro, setErro] = useState("");
 
   useEffect(() => {
@@ -89,119 +91,127 @@ function Login() {
   }
 
   return (
-    <div style={styles.container}>
-      <section style={styles.apresentacao}>
-        <h1 style={styles.titulo}>Barbearia System</h1>
-
-        <p style={styles.subtitulo}>
-          Sistema de gestão para barbearias, com controle de clientes,
-          agendamentos, serviços, caixa, estoque e funcionários.
-        </p>
-
-        <div style={styles.cards}>
-          <div style={styles.card}>Agenda organizada</div>
-          <div style={styles.card}>Controle de caixa</div>
-          <div style={styles.card}>Gestão de estoque</div>
+    <div className="login-page">
+      <nav className="login-page__navbar">
+        <div className="login-page__brand">
+          <span className="login-page__eyebrow">Gestão de negócios</span>
+          <h1 className="login-page__title">Controle total do seu negócio</h1>
         </div>
-      </section>
 
-      <section style={styles.loginBox}>
-        <h2>Entrar no sistema</h2>
+        <button
+          type="button"
+          className="login-page__hamburger"
+          onClick={() => setShowLogin((prev) => !prev)}
+          aria-expanded={showLogin}
+          aria-controls="login-mobile-menu"
+        >
+          {showLogin ? "×" : "☰"}
+        </button>
+      </nav>
 
-        <form onSubmit={handleLogin}>
-          <label>Email</label>
-          <input
-            style={styles.input}
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@barbearia.com"
-          />
+      <main className="login-page__main">
+        <div
+          id="login-mobile-menu"
+          className={`login-page__login-collapse ${showLogin ? "open" : ""}`}
+        >
+          <section className="login-page__login-panel">
+            <div className="login-page__panel-header">
+              <p className="login-page__panel-title">Acesse sua conta</p>
+              <span className="login-page__panel-subtitle">
+                Insira seu email e senha para entrar no sistema.
+              </span>
+            </div>
 
-          <label>Senha</label>
-          <input
-            style={styles.input}
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            placeholder="Digite sua senha"
-          />
+            <form onSubmit={handleLogin} className="login-page__form">
+              <label className="login-page__label">Email</label>
+              <input
+                className="login-page__input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@barbearia.com"
+              />
 
-          {erro && <p style={styles.erro}>{erro}</p>}
+              <label className="login-page__label">Senha</label>
+              <input
+                className="login-page__input"
+                type="password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                placeholder="Digite sua senha"
+              />
 
-          <button style={styles.botao} type="submit">
-            Entrar
-          </button>
-        </form>
-      </section>
+              {erro && <p className="login-page__error">{erro}</p>}
+
+              <button className="login-page__button" type="submit">
+                Entrar
+              </button>
+            </form>
+
+            <div className="login-page__footer">
+              <p>
+                Quer saber mais ou agendar uma demonstração? Entre em contato:
+              </p>
+              <a href="mailto:miltonrs.dev@gmail.com">
+                miltonrs.dev@gmail.com
+              </a>
+            </div>
+          </section>
+        </div>
+
+        <section className="login-page__content">
+          <p className="login-page__hero-text">
+            Um painel completo para agendamentos, financeiro, clientes,
+            estoque e equipe em uma única experiência.
+          </p>
+          <div className="login-page__cards">
+            <div className="login-page__card">
+              <h3>Agenda inteligente</h3>
+              <p>
+                Evite conflitos de horários, visualize disponibilidade e
+                gerencie a agenda de toda a equipe com clareza.
+              </p>
+            </div>
+            <div className="login-page__card">
+              <h3>Caixa e financeiro</h3>
+              <p>
+                Controle entradas, saídas e vendas em tempo real para deixar o
+                fluxo de caixa sempre organizado.
+              </p>
+            </div>
+            <div className="login-page__card">
+              <h3>Estoque automatizado</h3>
+              <p>
+                Acompanhe o uso de produtos, receba alertas de reposição e
+                evite perdas por falta de controle.
+              </p>
+            </div>
+            <div className="login-page__card">
+              <h3>Clientes fidelizados</h3>
+              <p>
+                Tenha histórico de atendimentos, preferências e perfil de cada
+                cliente em um único lugar.
+              </p>
+            </div>
+            <div className="login-page__card">
+              <h3>Equipe organizada</h3>
+              <p>
+                Defina disponibilidade, acompanhe horários e distribua serviços
+                com agilidade.
+              </p>
+            </div>
+            <div className="login-page__card">
+              <h3>Visão estratégica</h3>
+              <p>
+                Identifique os serviços mais rentáveis, o desempenho da equipe e
+                os pontos que precisam de atenção.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    background: "#111827",
-    color: "#fff",
-  },
-  apresentacao: {
-    flex: 1,
-    padding: "80px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  titulo: {
-    fontSize: "48px",
-    marginBottom: "20px",
-  },
-  subtitulo: {
-    fontSize: "20px",
-    maxWidth: "600px",
-    lineHeight: "1.6",
-    color: "#d1d5db",
-  },
-  cards: {
-    display: "flex",
-    gap: "16px",
-    marginTop: "40px",
-  },
-  card: {
-    background: "#1f2937",
-    padding: "20px",
-    borderRadius: "12px",
-  },
-  loginBox: {
-    width: "380px",
-    background: "#fff",
-    color: "#111827",
-    padding: "40px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  input: {
-    width: "100%",
-    padding: "12px",
-    marginTop: "8px",
-    marginBottom: "16px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-  },
-  botao: {
-    width: "100%",
-    padding: "12px",
-    border: "none",
-    borderRadius: "8px",
-    background: "#111827",
-    color: "#fff",
-    cursor: "pointer",
-    fontSize: "16px",
-  },
-  erro: {
-    color: "red",
-  },
-};
 
 export default Login;

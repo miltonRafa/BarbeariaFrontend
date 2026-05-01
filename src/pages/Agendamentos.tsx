@@ -2,27 +2,33 @@ import { useEffect, useState } from "react";
 import { listarAgendamentos } from "../services/agendamentoService";
 
 type Agendamento = {
-    id: number;
-    nome: string;
-    email: string;
-    telefone: string;
+  id: number;
+  cliente?: string;
+  funcionario?: string;
+  data?: string;
+  horaInicio?: string;
+  status?: string;
+  valorTotal?: number;
 };
 
 function Agendamentos() {
 
     const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
     const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState("");
 
     useEffect(() => {
         async function carregarAgendamentos() {
             try {
                 const data = await listarAgendamentos();
 
-                setAgendamentos(data);
+                setAgendamentos(Array.isArray(data) ? data : []);
+                setErro("");
 
             } catch (error) {
 
                 console.error("Erro ao buscar agendamentos", error);
+                setErro("Não foi possível carregar os agendamentos.");
 
             } finally {
 
@@ -53,6 +59,13 @@ function Agendamentos() {
             ">
                 Agendamentos
             </h1>
+
+
+            {erro && (
+                <p className="mb-5 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-200">
+                    {erro}
+                </p>
+            )}
 
 
             {agendamentos.length === 0 && (
@@ -93,15 +106,33 @@ function Agendamentos() {
                             text-[#c59d5f]
                             mb-3
                             ">
-                            {agendamento.nome}
+                            {agendamento.cliente ?? "Cliente não informado"}
                         </p>
 
                         <p className="text-[#9ca3af] mt-2">
-                            <strong>Email:</strong> {agendamento.email}
+                            <strong>Funcionário:</strong>{" "}
+                            {agendamento.funcionario ?? "Não informado"}
                         </p>
 
                         <p className="text-[#9ca3af]">
-                            <strong>Telefone:</strong> {agendamento.telefone}
+                            <strong>Data:</strong>{" "}
+                            {agendamento.data
+                                ? agendamento.data.split("-").reverse().join("/")
+                                : "Não informado"}
+                        </p>
+
+                        <p className="text-[#9ca3af]">
+                            <strong>Horário:</strong>{" "}
+                            {agendamento.horaInicio
+                                ? agendamento.horaInicio.substring(0, 5)
+                                : "Não informado"}
+                        </p>
+
+                        <p className="text-[#9ca3af]">
+                            <strong>Valor:</strong>{" "}
+                            {agendamento.valorTotal !== undefined
+                                ? `R$ ${Number(agendamento.valorTotal).toFixed(2).replace(".", ",")}`
+                                : "Não informado"}
                         </p>
 
                         <div className="
@@ -119,7 +150,7 @@ function Agendamentos() {
                                 rounded-full
                                 font-semibold
                             ">
-                                Agendado
+                                {agendamento.status ?? "AGENDADO"}
                             </span>
                         </div>
 
