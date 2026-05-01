@@ -9,7 +9,7 @@ type Props = {
   label?: string;
   options: Option[];
   value: number | string | null;
-  onChange: (value: any) => void;
+  onChange: (value: Option["value"]) => void;
 };
 
 function Dropdown({ label, options, value, onChange }: Props) {
@@ -24,7 +24,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
       )}
 
       <div className="relative">
-        {/* BOTÃO */}
+        {/* Botao com area de toque confortavel para mobile. */}
         <button
           onClick={() => setOpen(!open)}
           className="
@@ -33,7 +33,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
             border border-white/10
             text-white
             px-4 py-3
-            rounded-xl
+            rounded-lg
             flex
             justify-between
             items-center
@@ -49,7 +49,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
           <span className="text-[#c6a15b]">▼</span>
         </button>
 
-        {/* LISTA */}
+        {/* Lista posicionada acima do conteudo para nao empurrar cards vizinhos. */}
         {open && (
           <div
             className="
@@ -58,7 +58,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
                 w-full
                 bg-[#121214]
                 border border-white/10
-                rounded-xl
+                rounded-lg
                 shadow-xl
                 overflow-hidden
                 z-[9999]

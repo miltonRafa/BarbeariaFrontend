@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { listarFuncionarios } from "../../services/funcionarioService";
 import { listarHorariosDisponiveis } from "../../services/horarioDisponivelService";
 import { criarAgendamento } from "../../services/agendamentoService";
@@ -52,12 +52,6 @@ function Agendar() {
     carregarDados();
   }, []);
 
-  useEffect(() => {
-    if (funcionarioSelecionado && servicoSelecionado && dataSelecionada) {
-      buscarHorarios();
-    }
-  }, [funcionarioSelecionado, servicoSelecionado, dataSelecionada]);
-
   const servicosDoFuncionario = funcionarioSelecionado?.servicos ?? [];
 
   function gerarDias() {
@@ -79,7 +73,7 @@ function Agendar() {
     return horaCompleta?.substring(0, 5);
   }
 
-  async function buscarHorarios() {
+  const buscarHorarios = useCallback(async () => {
     if (!funcionarioSelecionado || !dataSelecionada) return;
 
     try {
@@ -106,7 +100,20 @@ function Agendar() {
     } finally {
       setLoadingHorarios(false);
     }
-  }
+  }, [dataSelecionada, funcionarioSelecionado]);
+
+  useEffect(() => {
+    if (funcionarioSelecionado && servicoSelecionado && dataSelecionada) {
+      // Busca externa disparada por selecao do usuario; o loading fica local ao fluxo.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      buscarHorarios();
+    }
+  }, [
+    buscarHorarios,
+    dataSelecionada,
+    funcionarioSelecionado,
+    servicoSelecionado,
+  ]);
 
   async function confirmarAgendamento() {
     const clienteId = Number(localStorage.getItem("clienteId"));
@@ -150,7 +157,7 @@ function Agendar() {
 
   return (
     <div className="pb-28">
-      <h1 className="text-3xl font-bold text-[#c59d5f] mb-2">
+      <h1 className="text-2xl sm:text-3xl font-bold text-[#c59d5f] mb-2">
         Agendar Horário
       </h1>
 
@@ -158,7 +165,7 @@ function Agendar() {
         Escolha o profissional, serviço, dia e horário disponível.
       </p>
 
-      <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
+      <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-6">
         <h2 className="text-xl font-semibold text-white mb-4">
           1. Profissional
         </h2>
@@ -174,7 +181,7 @@ function Agendar() {
                 setHorarios([]);
                 setHorarioSelecionado(null);
               }}
-              className={`text-left p-5 rounded-2xl border transition ${funcionarioSelecionado?.id === funcionario.id
+              className={`text-left p-4 sm:p-5 rounded-lg border transition ${funcionarioSelecionado?.id === funcionario.id
                   ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                   : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                 }`}
@@ -189,7 +196,7 @@ function Agendar() {
       </section>
 
       {funcionarioSelecionado && (
-        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
+        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             2. Serviço
           </h2>
@@ -208,7 +215,7 @@ function Agendar() {
                     setHorarios([]);
                     setHorarioSelecionado(null);
                   }}
-                  className={`text-left p-5 rounded-2xl border transition ${servicoSelecionado?.id === servico.id
+                  className={`text-left p-4 sm:p-5 rounded-lg border transition ${servicoSelecionado?.id === servico.id
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                       : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
@@ -226,7 +233,7 @@ function Agendar() {
       )}
 
       {funcionarioSelecionado && servicoSelecionado && (
-        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
+        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             3. Dia
           </h2>
@@ -243,7 +250,7 @@ function Agendar() {
                     setHorarios([]);
                     setHorarioSelecionado(null);
                   }}
-                  className={`min-w-[72px] rounded-2xl border px-3 py-3 text-center transition ${selecionada
+                  className={`min-w-[72px] rounded-lg border px-3 py-3 text-center transition ${selecionada
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                       : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
@@ -261,7 +268,7 @@ function Agendar() {
       )}
 
       {funcionarioSelecionado && servicoSelecionado && (
-        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-6">
+        <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             4. Horário
           </h2>
@@ -282,7 +289,7 @@ function Agendar() {
                 <button
                   key={horario.id}
                   onClick={() => setHorarioSelecionado(horario)}
-                  className={`px-5 py-3 rounded-xl border font-bold transition ${horarioSelecionado?.id === horario.id
+                  className={`px-5 py-3 rounded-lg border font-bold transition ${horarioSelecionado?.id === horario.id
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                       : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
@@ -296,7 +303,7 @@ function Agendar() {
       )}
 
       {horarioSelecionado && (
-        <div className="bg-black/90 border border-[#1f1f23] rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="bg-black/90 border border-[#1f1f23] rounded-lg p-4 sm:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <p className="text-[#9ca3af] text-sm">Resumo</p>
             <p className="text-white font-semibold">
@@ -307,7 +314,7 @@ function Agendar() {
 
           <button
             onClick={confirmarAgendamento}
-            className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-4 rounded-xl"
+            className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-4 rounded-lg"
           >
             Confirmar agendamento
           </button>

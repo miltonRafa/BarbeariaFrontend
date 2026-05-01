@@ -3,10 +3,15 @@ import { useEffect, useState } from "react";
 import { listarFuncionarios } from "../../services/funcionarioService";
 import Dropdown from "../../components/Dropdown";
 
+type FuncionarioAgenda = {
+  id: number;
+  nome: string;
+};
+
 function AgendaAdmin() {
   const location = useLocation();
 
-  const [funcionarios, setFuncionarios] = useState<any[]>([]);
+  const [funcionarios, setFuncionarios] = useState<FuncionarioAgenda[]>([]);
   const [funcionarioSelecionado, setFuncionarioSelecionado] = useState<
     number | null
   >(null);
@@ -15,7 +20,7 @@ function AgendaAdmin() {
     async function carregarFuncionarios() {
       try {
         const data = await listarFuncionarios();
-        const lista = Array.isArray(data) ? data : [];
+        const lista: FuncionarioAgenda[] = Array.isArray(data) ? data : [];
 
         setFuncionarios(lista);
 
@@ -52,18 +57,18 @@ function AgendaAdmin() {
   }
 
   const linkClass = (path: string) =>
-    `px-4 py-3 rounded-xl font-semibold border transition ${location.pathname.endsWith(path)
+    `px-4 py-3 rounded-lg font-semibold border transition ${location.pathname.endsWith(path)
       ? "bg-[#c6a15b] text-black border-[#c6a15b]"
       : "bg-[#121214]/80 text-white border-white/10 hover:border-[#c6a15b]"
     }`;
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-[#c6a15b] mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-[#c6a15b] mb-6">
         Agenda Geral
       </h1>
 
-      <div className="relative z-50 bg-[#121214]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 mb-6">
+      <div className="relative z-50 bg-[#121214]/80 backdrop-blur-xl border border-white/10 rounded-lg p-4 sm:p-5 mb-6">
         <Dropdown
           label="Funcionário selecionado"
           value={funcionarioSelecionado}
@@ -75,7 +80,7 @@ function AgendaAdmin() {
         />
       </div>
 
-      <div className="bg-[#121214]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 mb-6">
+      <div className="bg-[#121214]/80 backdrop-blur-xl border border-white/10 rounded-lg p-4 sm:p-5 mb-6">
         <p className="text-[#9ca3af] mb-4">
           Gerencie os dados do funcionário selecionado.
         </p>

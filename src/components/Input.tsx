@@ -20,9 +20,10 @@ function Input({
     onChange={onChange}
     className="
       border
-      rounded-xl
+      rounded-lg
       px-4
-      py-2
+      py-3
+      min-h-11
       w-full
       focus:outline-none
       focus:ring-2

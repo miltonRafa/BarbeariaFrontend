@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   criarHorarioDisponivel,
   listarHorariosDisponiveis,
@@ -20,11 +20,7 @@ function MeusHorarios() {
   const [fim, setFim] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    carregarHorarios();
-  }, [dataHorarios]);
-
-  async function carregarHorarios() {
+  const carregarHorarios = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -43,7 +39,13 @@ function MeusHorarios() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [dataHorarios]);
+
+  useEffect(() => {
+    // Sincroniza a lista com o dia selecionado sem alterar a navegacao da tela.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    carregarHorarios();
+  }, [carregarHorarios]);
 
   async function disponibilizarHorario() {
     try {
@@ -87,7 +89,7 @@ function MeusHorarios() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-[#c59d5f] mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-[#c59d5f] mb-6">
         Meus Horários
       </h1>
 
@@ -111,7 +113,7 @@ function MeusHorarios() {
                   setDataHorarios(valor);
                   setHorarios([]);
                 }}
-                className={`min-w-[60px] px-4 py-3 rounded-xl font-bold border transition ${
+                className={`min-w-[60px] px-4 py-3 rounded-lg font-bold border transition ${
                   selecionado
                     ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                     : "bg-[#121214] text-white border-[#1f1f23] hover:border-[#c59d5f]"
@@ -124,7 +126,7 @@ function MeusHorarios() {
         </div>
       </div>
 
-      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-8 text-white">
+      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-8 text-white">
         <h2 className="text-xl font-bold text-[#c59d5f] mb-4">
           Disponibilizar horário
         </h2>
@@ -140,7 +142,7 @@ function MeusHorarios() {
               type="time"
               value={inicio}
               onChange={(e) => setInicio(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] text-white"
+              className="w-full px-4 py-3 rounded-lg bg-[#121214] border border-[#1f1f23] text-white"
             />
           </div>
 
@@ -150,14 +152,14 @@ function MeusHorarios() {
               type="time"
               value={fim}
               onChange={(e) => setFim(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] text-white"
+              className="w-full px-4 py-3 rounded-lg bg-[#121214] border border-[#1f1f23] text-white"
             />
           </div>
         </div>
 
         <button
           onClick={disponibilizarHorario}
-          className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-xl"
+          className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-lg"
         >
           Disponibilizar horário
         </button>
@@ -171,11 +173,11 @@ function MeusHorarios() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {horarios.map((horario) => (
           <div
             key={horario.id}
-            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white shadow-lg"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 text-white shadow-lg"
           >
             <p className="text-xl font-semibold text-[#c59d5f] mb-3">
               Horário disponível

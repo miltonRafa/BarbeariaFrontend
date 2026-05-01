@@ -1,8 +1,25 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+const funcionarioMenuItems = [
+  {
+    label: "Agendamentos",
+    shortLabel: "Agenda",
+    path: "/funcionario/agendamentos",
+  },
+  { label: "Horários", shortLabel: "Horários", path: "/funcionario/horarios" },
+  { label: "Serviços", shortLabel: "Serviços", path: "/funcionario/servicos" },
+  {
+    label: "Expediente",
+    shortLabel: "Expediente",
+    path: "/funcionario/expediente",
+  },
+];
 
 function LayoutFuncionario() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function logout() {
     localStorage.removeItem("token");
@@ -11,16 +28,16 @@ function LayoutFuncionario() {
   }
 
   const linkClass = (path: string) =>
-    `px-4 py-3 rounded-xl font-semibold text-center transition ${
+    `rounded-lg px-4 py-3 text-center font-semibold transition ${
       location.pathname === path
         ? "bg-[#c59d5f] text-black"
-        : "text-white hover:bg-[#1f1f23]"
+        : "text-white hover:bg-white/5"
     }`;
 
   return (
     <div className="min-h-screen bg-[#1a1a1d] text-white">
-      <header className="sticky top-0 z-40 bg-black/90 border-b border-[#1f1f23]">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <header className="sticky top-0 z-40 border-b border-[#1f1f23] bg-black/90 backdrop-blur-xl">
+        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between px-4">
           <div>
             <h1 className="text-xl font-bold text-[#c59d5f]">
               Área do Funcionário
@@ -30,63 +47,66 @@ function LayoutFuncionario() {
             </p>
           </div>
 
+          <div className="hidden items-center gap-2 md:flex">
+            {funcionarioMenuItems.map((item) => (
+              <Link key={item.path} to={item.path} className={linkClass(item.path)}>
+                {item.label}
+              </Link>
+            ))}
+
+            <button
+              onClick={logout}
+              className="rounded-lg px-4 py-3 font-semibold text-white transition hover:bg-red-700"
+            >
+              Sair
+            </button>
+          </div>
+
           <button
-            onClick={logout}
-            className="hidden sm:block bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl font-semibold"
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="funcionario-mobile-menu"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-2xl leading-none transition hover:border-[#c59d5f] hover:text-[#c59d5f] md:hidden"
           >
-            Sair
+            {menuOpen ? "×" : "☰"}
           </button>
+        </div>
+
+        {/* Header expansivel deixa a navegacao consistente em celulares e tablets pequenos. */}
+        <div
+          id="funcionario-mobile-menu"
+          className={`grid transition-[grid-template-rows] duration-300 md:hidden ${
+            menuOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <nav className="grid gap-2 overflow-hidden px-4">
+            <div className="grid gap-2 pb-4 pt-1">
+              {funcionarioMenuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={linkClass(item.path)}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.shortLabel}
+                </Link>
+              ))}
+
+              <button
+                onClick={logout}
+                className="rounded-lg px-4 py-3 font-semibold text-white transition hover:bg-red-700"
+              >
+                Sair
+              </button>
+            </div>
+          </nav>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 pb-28">
+      <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 md:py-8">
         <Outlet />
       </main>
-
-      <nav className="hidden md:flex fixed left-1/2 -translate-x-1/2 bottom-6 z-50 bg-black/90 border border-[#1f1f23] rounded-2xl p-2 gap-2 shadow-xl">
-        <Link to="/funcionario/agendamentos" className={linkClass("/funcionario/agendamentos")}>
-          Agendamentos
-        </Link>
-
-        <Link to="/funcionario/horarios" className={linkClass("/funcionario/horarios")}>
-          Horários
-        </Link>
-
-        <Link to="/funcionario/servicos" className={linkClass("/funcionario/servicos")}>
-          Serviços
-        </Link>
-
-        <Link to="/funcionario/expediente" className={linkClass("/funcionario/expediente")}>
-          Expediente
-        </Link>
-
-        <button
-          onClick={logout}
-          className="px-4 py-3 rounded-xl font-semibold text-white hover:bg-red-700"
-        >
-          Sair
-        </button>
-      </nav>
-
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/95 border-t border-[#1f1f23] px-2 py-2">
-        <div className="grid grid-cols-4 gap-1 text-xs">
-          <Link to="/funcionario/agendamentos" className={linkClass("/funcionario/agendamentos")}>
-            Agenda
-          </Link>
-
-          <Link to="/funcionario/horarios" className={linkClass("/funcionario/horarios")}>
-            Horários
-          </Link>
-
-          <Link to="/funcionario/servicos" className={linkClass("/funcionario/servicos")}>
-            Serviços
-          </Link>
-
-          <Link to="/funcionario/expediente" className={linkClass("/funcionario/expediente")}>
-            Exp.
-          </Link>
-        </div>
-      </nav>
     </div>
   );
 }

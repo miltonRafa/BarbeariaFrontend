@@ -25,7 +25,7 @@ import LayoutCaixa from "./pages/caixa/LayoutCaixa";
 import Caixa from "./pages/caixa/Caixa";
 
 import AgendaAdmin from "./pages/admin/AgendaAdmin";
-import Dashboard from "./pages/admin/dashboard/Dashboard";
+import Dashboard from "./pages/admin/Dashboard";
 
 
 

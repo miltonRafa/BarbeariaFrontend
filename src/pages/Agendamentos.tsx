@@ -46,7 +46,7 @@ function Agendamentos() {
         <div>
 
             <h1 className="
-                text-3xl
+                text-2xl sm:text-3xl
                 font-bold
                 text-[#c59d5f]
                 mb-6
@@ -67,7 +67,7 @@ function Agendamentos() {
                 grid-cols-1
                 md:grid-cols-2
                 lg:grid-cols-3
-                gap-5
+                gap-4 sm:gap-5
             ">
 
                 {agendamentos.map((agendamento) => (
@@ -78,8 +78,8 @@ function Agendamentos() {
                             bg-[#0b0b0c]/80
                             border
                             border-[#1f1f23]
-                            rounded-2xl
-                            p-5
+                            rounded-lg
+                            p-4 sm:p-5
                             shadow-lg
                             text-white
                             hover:border-[#c59d5f]

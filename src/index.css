@@ -1,10 +1,45 @@
 @import "tailwindcss";
 
-body {
-  background-color: #1a1a1d;
-  color: #e5e5e5;
+* {
+  box-sizing: border-box;
 }
 
 html {
   background-color: #1a1a1d;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: #1a1a1d;
+  color: #e5e5e5;
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Scroll horizontal fica restrito a componentes, evitando que a pagina inteira estoure no mobile. */
+.responsive-scroll {
+  margin-inline: -1rem;
+  overflow-x: auto;
+  padding-inline: 1rem;
+  scrollbar-width: thin;
+}
+
+@media (min-width: 640px) {
+  .responsive-scroll {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
 }

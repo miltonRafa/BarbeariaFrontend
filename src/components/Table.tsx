@@ -11,7 +11,9 @@ type Props = {
 function Table({dados}:Props){
 
  return(
-<table className="w-full bg-white rounded-xl shadow">
+<div className="responsive-scroll">
+{/* Tabelas preservam colunas e rolam apenas dentro do proprio bloco em telas estreitas. */}
+<table className="min-w-[560px] w-full overflow-hidden rounded-lg bg-white shadow">
 
 <thead>
 <tr className="border-b">
@@ -32,6 +34,7 @@ function Table({dados}:Props){
 </tbody>
 
 </table>
+</div>
  )
 
 }

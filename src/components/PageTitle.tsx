@@ -5,9 +5,11 @@ type Props = {
 function PageTitle({titulo}:Props){
  return(
    <h1 className="
-      text-3xl
+      text-2xl
+      sm:text-3xl
       font-bold
-      mb-6
+      mb-5
+      sm:mb-6
    ">
       {titulo}
    </h1>

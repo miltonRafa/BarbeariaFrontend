@@ -86,13 +86,13 @@ function Funcionarios() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-[#c59d5f] mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-[#c59d5f] mb-6">
         Funcionários
       </h1>
 
       <form
         onSubmit={cadastrarFuncionario}
-        className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 mb-8 text-white"
+        className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-8 text-white"
       >
         <h2 className="text-xl font-semibold text-[#c59d5f] mb-4">
           Cadastrar funcionário
@@ -104,7 +104,7 @@ function Funcionarios() {
             onChange={(e) => setNome(e.target.value)}
             placeholder="Nome"
             disabled={salvando}
-            className="px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
+            className="px-4 py-3 rounded-lg bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
           />
 
           <input
@@ -113,7 +113,7 @@ function Funcionarios() {
             placeholder="Email"
             type="email"
             disabled={salvando}
-            className="px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
+            className="px-4 py-3 rounded-lg bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
           />
 
           <input
@@ -122,14 +122,14 @@ function Funcionarios() {
             placeholder="Senha"
             type="password"
             disabled={salvando}
-            className="px-4 py-3 rounded-xl bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
+            className="px-4 py-3 rounded-lg bg-[#121214] border border-[#1f1f23] disabled:opacity-50"
           />
         </div>
 
         <button
           type="submit"
           disabled={salvando}
-          className="mt-5 bg-[#c59d5f] hover:bg-[#d6ae70] disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold px-6 py-3 rounded-xl"
+          className="mt-5 bg-[#c59d5f] hover:bg-[#d6ae70] disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold px-6 py-3 rounded-lg"
         >
           {salvando ? "Cadastrando..." : "Cadastrar funcionário"}
         </button>
@@ -143,7 +143,7 @@ function Funcionarios() {
         {funcionarios.map((funcionario) => (
           <div
             key={funcionario.id}
-            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white shadow-lg"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 text-white shadow-lg"
           >
             <p className="text-xl font-semibold text-[#c59d5f]">
               {funcionario.nome}

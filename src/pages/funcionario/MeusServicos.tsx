@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   atribuirServicosAoFuncionario,
   listarServicosDoFuncionario,
@@ -20,11 +20,7 @@ function MeusServicos() {
   const [servicosSelecionados, setServicosSelecionados] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    carregarServicos();
-  }, []);
-
-  async function carregarServicos() {
+  const carregarServicos = useCallback(async () => {
     try {
       const funcionarioId =
         Number(localStorage.getItem("funcionarioAgendaId")) ||
@@ -51,7 +47,13 @@ function MeusServicos() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    // Carregamento inicial mantido isolado para preservar o fluxo existente da pagina.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    carregarServicos();
+  }, [carregarServicos]);
 
   function alternarServico(servicoId: number) {
     setServicosSelecionados((atual) => {
@@ -105,11 +107,11 @@ function MeusServicos() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-[#c59d5f] mb-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-[#c59d5f] mb-6">
         Meus Serviços
       </h1>
 
-      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white mb-6">
+      <div className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 text-white mb-6">
         <p className="text-[#9ca3af]">
           Selecione os serviços que você realiza na barbearia.
         </p>
@@ -121,7 +123,7 @@ function MeusServicos() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-8">
         {servicos.map((servico) => {
           const selecionado = servicosSelecionados.includes(servico.id);
 
@@ -129,7 +131,7 @@ function MeusServicos() {
             <button
               key={servico.id}
               onClick={() => alternarServico(servico.id)}
-              className={`text-left rounded-2xl p-5 border transition ${
+              className={`text-left rounded-lg p-4 sm:p-5 border transition ${
                 selecionado
                   ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                   : "bg-[#0b0b0c]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
@@ -159,7 +161,7 @@ function MeusServicos() {
 
       <button
         onClick={salvarServicos}
-        className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-xl mb-10"
+        className="bg-[#c59d5f] hover:bg-[#d6ae70] text-black font-bold px-6 py-3 rounded-lg mb-10"
       >
         Salvar meus serviços
       </button>
@@ -174,11 +176,11 @@ function MeusServicos() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {meusServicos.map((servico) => (
           <div
             key={servico.id}
-            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-2xl p-5 text-white"
+            className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 text-white"
           >
             <p className="text-xl font-semibold text-[#c59d5f] mb-2">
               {servico.nome}
