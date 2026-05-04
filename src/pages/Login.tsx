@@ -123,19 +123,25 @@ function Login() {
             </div>
 
             <form onSubmit={handleLogin} className="login-page__form">
-              <label className="login-page__label">Email</label>
+              <label className="login-page__label" htmlFor="login-email">Email</label>
               <input
+                id="login-email"
+                name="email"
                 className="login-page__input"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@barbearia.com"
               />
 
-              <label className="login-page__label">Senha</label>
+              <label className="login-page__label" htmlFor="login-senha">Senha</label>
               <input
+                id="login-senha"
+                name="senha"
                 className="login-page__input"
                 type="password"
+                autoComplete="current-password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 placeholder="Digite sua senha"

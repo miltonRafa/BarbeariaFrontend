@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { listarAgendamentosDoCliente } from "../../services/agendamentoService";
+import {
+  cancelarAgendamento,
+  listarAgendamentosDoCliente,
+} from "../../services/agendamentoService";
 
 type Agendamento = {
   id: number;
@@ -8,6 +11,7 @@ type Agendamento = {
   data?: string;
   horaInicio?: string;
   status?: string;
+  statusFinanceiro?: string;
   valorTotal?: number;
 };
 
@@ -17,7 +21,10 @@ function ServicosAgendados() {
   const clienteId = Number(localStorage.getItem("clienteId"));
 
   useEffect(() => {
-    async function carregarAgendamentos() {
+    carregarAgendamentos();
+  }, [clienteId]);
+
+  async function carregarAgendamentos() {
       try {
         const data = await listarAgendamentosDoCliente(clienteId);
         setAgendamentos(Array.isArray(data) ? data : []);
@@ -26,10 +33,13 @@ function ServicosAgendados() {
       } finally {
         setLoading(false);
       }
-    }
+  }
 
-    carregarAgendamentos();
-  }, [clienteId]);
+  async function cancelar(id: number) {
+    if (!confirm("Cancelar este agendamento?")) return;
+    await cancelarAgendamento(id);
+    await carregarAgendamentos();
+  }
 
   if (loading) {
     return <p className="text-white text-lg">Carregando...</p>;
@@ -70,9 +80,10 @@ function ServicosAgendados() {
             </p>
 
             <p className="text-[#9ca3af]">
+              <strong>Horário:</strong>{" "}
               {agendamento.horaInicio
-              ? agendamento.horaInicio.substring(0, 5)
-              : "Não informado"}
+                ? agendamento.horaInicio.substring(0, 5)
+                : "Não informado"}
             </p>
 
             <p className="text-[#9ca3af]">
@@ -82,10 +93,24 @@ function ServicosAgendados() {
                 : "Não informado"}
             </p>
 
-            <div className="mt-4 pt-4 border-t border-[#1f1f23]">
+            <p className="text-[#9ca3af]">
+              <strong>Financeiro:</strong>{" "}
+              {agendamento.statusFinanceiro ?? "PENDENTE"}
+            </p>
+
+            <div className="mt-4 pt-4 border-t border-[#1f1f23] flex items-center justify-between gap-3">
               <span className="text-xs bg-[#c59d5f] text-black px-3 py-1 rounded-full font-semibold">
                 {agendamento.status ?? "AGENDADO"}
               </span>
+              {agendamento.status !== "CANCELADO" && (
+                <button
+                  type="button"
+                  onClick={() => cancelar(agendamento.id)}
+                  className="rounded-lg border border-red-500/40 px-3 py-1 text-xs font-semibold text-red-200 hover:bg-red-500/10"
+                >
+                  Cancelar
+                </button>
+              )}
             </div>
           </div>
         ))}

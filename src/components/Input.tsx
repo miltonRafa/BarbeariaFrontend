@@ -1,4 +1,6 @@
 type InputProps = {
+ id?: string;
+ name?: string;
  placeholder?: string;
  value?: string;
  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -6,6 +8,8 @@ type InputProps = {
 };
 
 function Input({
+ id,
+ name,
  placeholder,
  value,
  onChange,
@@ -14,6 +18,8 @@ function Input({
 
  return(
    <input
+    id={id}
+    name={name ?? id}
     type={type}
     placeholder={placeholder}
     value={value}

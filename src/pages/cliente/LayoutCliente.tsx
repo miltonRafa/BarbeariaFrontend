@@ -21,19 +21,23 @@ function LayoutCliente() {
   }
 
   const linkClass = (path: string) =>
-    `flex items-center justify-center rounded-lg px-4 py-3 text-center font-semibold transition ${
+    `flex items-center justify-center rounded-lg border px-4 py-3 text-center font-semibold transition ${
       location.pathname === path
-        ? "bg-[#c59d5f] text-black"
-        : "text-white hover:bg-white/5"
+        ? "border-[#c59d5f] bg-[#c59d5f] text-black"
+        : "border-transparent text-white hover:border-white/10 hover:bg-white/5"
     }`;
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.78)),url('/barbearia-bg.png')] bg-cover bg-center bg-fixed text-white">
-      <header className="sticky top-0 z-40 border-b border-[#1f1f23] bg-black/85 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between px-4">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(197,157,95,.16),transparent_34%),linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.82)),url('/barbearia-bg.png')] bg-cover bg-center bg-fixed text-white">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-xl">
+        <div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between px-4">
           <div>
-            <h1 className="text-xl font-bold text-[#c59d5f]">Barbearia</h1>
-            <p className="text-xs text-[#9ca3af]">Área do cliente</p>
+            <h1 className="text-2xl font-extrabold tracking-wide text-[#c59d5f]">
+              HONORATO
+            </h1>
+            <p className="text-xs uppercase tracking-[0.24em] text-[#9ca3af]">
+              Área do cliente
+            </p>
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -93,7 +97,18 @@ function LayoutCliente() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-5 sm:px-6 md:py-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 md:py-10">
+        <div className="mb-8 rounded-lg border border-white/10 bg-black/45 p-5 backdrop-blur-xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#c59d5f]">
+            Agendamento online
+          </p>
+          <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
+            Escolha seu horário com praticidade
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#9ca3af]">
+            Selecione profissional, serviços e o melhor início dentro dos horários disponíveis.
+          </p>
+        </div>
         <Outlet />
       </main>
     </div>

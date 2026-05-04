@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { listarAgendamentos } from "../services/agendamentoService";
+import {
+    cancelarAgendamento,
+    listarAgendamentos,
+    pagarAgendamento,
+} from "../services/agendamentoService";
 
 type Agendamento = {
   id: number;
@@ -8,7 +12,10 @@ type Agendamento = {
   data?: string;
   horaInicio?: string;
   status?: string;
+  statusFinanceiro?: string;
   valorTotal?: number;
+  cancelamentosCliente?: number;
+  taxaCancelamentoCliente?: number;
 };
 
 function Agendamentos() {
@@ -18,7 +25,10 @@ function Agendamentos() {
     const [erro, setErro] = useState("");
 
     useEffect(() => {
-        async function carregarAgendamentos() {
+        carregarAgendamentos();
+    }, []);
+
+    async function carregarAgendamentos() {
             try {
                 const data = await listarAgendamentos();
 
@@ -35,10 +45,18 @@ function Agendamentos() {
                 setLoading(false);
 
             }
-        }
+    }
 
-        carregarAgendamentos();
-    }, []);
+    async function cancelar(id: number) {
+        if (!confirm("Cancelar este agendamento?")) return;
+        await cancelarAgendamento(id);
+        await carregarAgendamentos();
+    }
+
+    async function marcarPago(id: number) {
+        await pagarAgendamento(id);
+        await carregarAgendamentos();
+    }
 
     if (loading) {
         return (
@@ -135,11 +153,26 @@ function Agendamentos() {
                                 : "Não informado"}
                         </p>
 
+                        <p className="text-[#9ca3af]">
+                            <strong>Financeiro:</strong>{" "}
+                            {agendamento.statusFinanceiro ?? "PENDENTE"}
+                        </p>
+
+                        <p className="text-[#9ca3af]">
+                            <strong>Cancelamentos do cliente:</strong>{" "}
+                            {agendamento.cancelamentosCliente ?? 0} (
+                            {Number(agendamento.taxaCancelamentoCliente ?? 0).toFixed(1)}%)
+                        </p>
+
                         <div className="
                             mt-4
                             pt-4
                             border-t
                             border-[#1f1f23]
+                            flex
+                            items-center
+                            justify-between
+                            gap-3
                             ">
                             <span className="
                                 text-xs
@@ -152,6 +185,26 @@ function Agendamentos() {
                             ">
                                 {agendamento.status ?? "AGENDADO"}
                             </span>
+                            {agendamento.status !== "CANCELADO" && (
+                                <div className="flex flex-wrap gap-2">
+                                    {agendamento.statusFinanceiro !== "PAGO" && (
+                                        <button
+                                            type="button"
+                                            onClick={() => marcarPago(agendamento.id)}
+                                            className="rounded-lg border border-emerald-500/40 px-3 py-1 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/10"
+                                        >
+                                            Marcar pago
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => cancelar(agendamento.id)}
+                                        className="rounded-lg border border-red-500/40 px-3 py-1 text-xs font-semibold text-red-200 hover:bg-red-500/10"
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                     </div>

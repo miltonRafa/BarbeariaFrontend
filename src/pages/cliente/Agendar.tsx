@@ -34,12 +34,13 @@ function Agendar() {
   const [funcionarioSelecionado, setFuncionarioSelecionado] =
     useState<Funcionario | null>(null);
 
-  const [servicoSelecionado, setServicoSelecionado] =
-    useState<Servico | null>(null);
+  const [servicosSelecionados, setServicosSelecionados] = useState<number[]>([]);
 
   const [dataSelecionada, setDataSelecionada] = useState(hoje);
-  const [horarioSelecionado, setHorarioSelecionado] =
-    useState<HorarioDisponivel | null>(null);
+  const [horarioSelecionado, setHorarioSelecionado] = useState<{
+    horario: HorarioDisponivel;
+    hora: string;
+  } | null>(null);
 
   const [loadingHorarios, setLoadingHorarios] = useState(false);
 
@@ -53,6 +54,13 @@ function Agendar() {
   }, []);
 
   const servicosDoFuncionario = funcionarioSelecionado?.servicos ?? [];
+  const servicosEscolhidos = servicosDoFuncionario.filter((servico) =>
+    servicosSelecionados.includes(servico.id)
+  );
+  const duracaoTotal = servicosEscolhidos.reduce(
+    (total, servico) => total + (servico.duracaoMinutos ?? 0),
+    0
+  );
 
   function gerarDias() {
     return Array.from({ length: 10 }).map((_, index) => {
@@ -66,11 +74,6 @@ function Agendar() {
         semana: data.toLocaleDateString("pt-BR", { weekday: "short" }),
       };
     });
-  }
-
-  function formatarHora(dataHora: string) {
-    const [, horaCompleta] = dataHora.split("T");
-    return horaCompleta?.substring(0, 5);
   }
 
   const buscarHorarios = useCallback(async () => {
@@ -103,16 +106,14 @@ function Agendar() {
   }, [dataSelecionada, funcionarioSelecionado]);
 
   useEffect(() => {
-    if (funcionarioSelecionado && servicoSelecionado && dataSelecionada) {
-      // Busca externa disparada por selecao do usuario; o loading fica local ao fluxo.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (funcionarioSelecionado && servicosSelecionados.length > 0 && dataSelecionada) {
       buscarHorarios();
     }
   }, [
     buscarHorarios,
     dataSelecionada,
     funcionarioSelecionado,
-    servicoSelecionado,
+    servicosSelecionados.length,
   ]);
 
   async function confirmarAgendamento() {
@@ -120,16 +121,13 @@ function Agendar() {
 
     console.log("clienteId:", clienteId);
     console.log("funcionario:", funcionarioSelecionado);
-    console.log("servico:", servicoSelecionado);
-    console.log("horario:", horarioSelecionado);
-
     if (!clienteId) {
       alert("Cliente não identificado. Faça login novamente.");
       return;
     }
 
-    if (!funcionarioSelecionado || !servicoSelecionado || !horarioSelecionado) {
-      alert("Selecione funcionário, serviço e horário.");
+    if (!funcionarioSelecionado || servicosSelecionados.length === 0 || !horarioSelecionado?.hora) {
+      alert("Selecione funcionário, serviço(s) e horário.");
       return;
     }
 
@@ -137,15 +135,16 @@ function Agendar() {
       const resposta = await criarAgendamento({
         clienteId,
         funcionarioId: funcionarioSelecionado.id,
-        servicosIds: [servicoSelecionado.id],
-        horarioDisponivelId: horarioSelecionado.id,
+        servicosIds: servicosSelecionados,
+        horarioDisponivelId: horarioSelecionado.horario.id,
+        horaInicio: horarioSelecionado.hora,
       });
 
       console.log("Agendamento criado:", resposta);
 
       alert("Agendamento realizado com sucesso!");
 
-      setServicoSelecionado(null);
+      setServicosSelecionados([]);
       setDataSelecionada(hoje);
       setHorarios([]);
       setHorarioSelecionado(null);
@@ -176,7 +175,7 @@ function Agendar() {
               key={funcionario.id}
               onClick={() => {
                 setFuncionarioSelecionado(funcionario);
-                setServicoSelecionado(null);
+                setServicosSelecionados([]);
                 setDataSelecionada(hoje);
                 setHorarios([]);
                 setHorarioSelecionado(null);
@@ -211,11 +210,15 @@ function Agendar() {
                 <button
                   key={servico.id}
                   onClick={() => {
-                    setServicoSelecionado(servico);
+                    setServicosSelecionados((atual) =>
+                      atual.includes(servico.id)
+                        ? atual.filter((id) => id !== servico.id)
+                        : [...atual, servico.id]
+                    );
                     setHorarios([]);
                     setHorarioSelecionado(null);
                   }}
-                  className={`text-left p-4 sm:p-5 rounded-lg border transition ${servicoSelecionado?.id === servico.id
+                  className={`text-left p-4 sm:p-5 rounded-lg border transition ${servicosSelecionados.includes(servico.id)
                       ? "bg-[#c59d5f] text-black border-[#c59d5f]"
                       : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
                     }`}
@@ -232,13 +235,26 @@ function Agendar() {
         </section>
       )}
 
-      {funcionarioSelecionado && servicoSelecionado && (
+      {funcionarioSelecionado && servicosSelecionados.length > 0 && (
         <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             3. Dia
           </h2>
 
           <div className="flex gap-2 overflow-x-auto pb-2">
+            <input
+              id="agendar-data"
+              name="data"
+              type="date"
+              min={hoje}
+              value={dataSelecionada}
+              onChange={(e) => {
+                setDataSelecionada(e.target.value);
+                setHorarios([]);
+                setHorarioSelecionado(null);
+              }}
+              className="min-w-[180px] rounded-lg border border-[#1f1f23] bg-[#121214]/80 px-4 py-3 text-white"
+            />
             {gerarDias().map((data) => {
               const selecionada = dataSelecionada === data.valor;
 
@@ -267,7 +283,7 @@ function Agendar() {
         </section>
       )}
 
-      {funcionarioSelecionado && servicoSelecionado && (
+      {funcionarioSelecionado && servicosSelecionados.length > 0 && (
         <section className="bg-[#0b0b0c]/80 backdrop-blur-xl border border-[#1f1f23] rounded-lg p-4 sm:p-5 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             4. Horário
@@ -284,18 +300,37 @@ function Agendar() {
           )}
 
           {!loadingHorarios && horarios.length > 0 && (
-            <div className="flex flex-wrap gap-3">
+            <div className="grid gap-4">
               {horarios.map((horario) => (
-                <button
+                <div
                   key={horario.id}
-                  onClick={() => setHorarioSelecionado(horario)}
-                  className={`px-5 py-3 rounded-lg border font-bold transition ${horarioSelecionado?.id === horario.id
-                      ? "bg-[#c59d5f] text-black border-[#c59d5f]"
-                      : "bg-[#121214]/80 text-white border-[#1f1f23] hover:border-[#c59d5f]"
-                    }`}
+                  className="rounded-lg border border-[#1f1f23] bg-[#121214]/80 p-4"
                 >
-                  {formatarHora(horario.inicio)}
-                </button>
+                  <p className="font-semibold text-white">
+                    Disponível das {extrairHora(horario.inicio)} às {extrairHora(horario.fim)}
+                  </p>
+                  <p className="mt-1 text-sm text-[#9ca3af]">
+                    Opções divididas em blocos de {duracaoTotal} min.
+                  </p>
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    {gerarOpcoesDeInicio(horario, duracaoTotal).map((hora) => (
+                      <button
+                        key={`${horario.id}-${hora}`}
+                        type="button"
+                        onClick={() => setHorarioSelecionado({ horario, hora })}
+                        className={`rounded-lg border px-5 py-3 font-bold transition ${
+                          horarioSelecionado?.horario.id === horario.id &&
+                          horarioSelecionado.hora === hora
+                            ? "border-[#c59d5f] bg-[#c59d5f] text-black"
+                            : "border-[#1f1f23] bg-black/40 text-white hover:border-[#c59d5f]"
+                        }`}
+                      >
+                        {hora}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -307,8 +342,8 @@ function Agendar() {
           <div>
             <p className="text-[#9ca3af] text-sm">Resumo</p>
             <p className="text-white font-semibold">
-              {funcionarioSelecionado?.nome} • {servicoSelecionado?.nome} •{" "}
-              {formatarHora(horarioSelecionado.inicio)}
+              {funcionarioSelecionado?.nome} • {servicosEscolhidos.length} serviço(s) •{" "}
+              {horarioSelecionado.hora} • {duracaoTotal} min
             </p>
           </div>
 
@@ -322,6 +357,28 @@ function Agendar() {
       )}
     </div>
   );
+}
+
+function extrairHora(dataHora: string) {
+  const [, horaCompleta] = dataHora.split("T");
+  return horaCompleta?.substring(0, 5) ?? "";
+}
+
+function gerarOpcoesDeInicio(horario: HorarioDisponivel, duracaoMinutos: number) {
+  const inicio = new Date(horario.inicio);
+  const fim = new Date(horario.fim);
+  const ultimoInicio = new Date(fim.getTime() - duracaoMinutos * 60000);
+  const opcoes: string[] = [];
+
+  for (
+    let atual = new Date(inicio);
+    atual <= ultimoInicio;
+    atual = new Date(atual.getTime() + duracaoMinutos * 60000)
+  ) {
+    opcoes.push(atual.toTimeString().slice(0, 5));
+  }
+
+  return opcoes;
 }
 
 export default Agendar;

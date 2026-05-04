@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   criarHorarioDisponivel,
   listarHorariosDisponiveis,
@@ -11,7 +12,13 @@ type HorarioDisponivel = {
   status: string;
 };
 
+type AgendaContext = {
+  funcionarioId?: number | null;
+};
+
 function MeusHorarios() {
+  const agendaContext = useOutletContext<AgendaContext | null>();
+  const funcionarioContextId = agendaContext?.funcionarioId;
   const hoje = new Date().toISOString().split("T")[0];
 
   const [horarios, setHorarios] = useState<HorarioDisponivel[]>([]);
@@ -25,8 +32,14 @@ function MeusHorarios() {
       setLoading(true);
 
       const funcionarioId =
+        funcionarioContextId ||
         Number(localStorage.getItem("funcionarioAgendaId")) ||
         Number(localStorage.getItem("funcionarioId"));
+
+      if (!funcionarioId) {
+        setHorarios([]);
+        return;
+      }
 
       const data = await listarHorariosDisponiveis(
         funcionarioId,
@@ -39,7 +52,7 @@ function MeusHorarios() {
     } finally {
       setLoading(false);
     }
-  }, [dataHorarios]);
+  }, [funcionarioContextId, dataHorarios]);
 
   useEffect(() => {
     // Sincroniza a lista com o dia selecionado sem alterar a navegacao da tela.
@@ -49,7 +62,9 @@ function MeusHorarios() {
 
   async function disponibilizarHorario() {
     try {
-      const funcionarioId = Number(localStorage.getItem("funcionarioId"));
+      const funcionarioId =
+        funcionarioContextId ||
+        Number(localStorage.getItem("funcionarioId"));
 
       if (!funcionarioId) {
         alert("Funcionário não identificado. Faça login novamente.");
@@ -96,6 +111,19 @@ function MeusHorarios() {
       <div className="mb-6">
         <label className="block text-[#9ca3af] mb-3">Escolha o dia</label>
 
+        <input
+          id="horarios-data"
+          name="dataHorarios"
+          type="date"
+          min={hoje}
+          value={dataHorarios}
+          onChange={(e) => {
+            setDataHorarios(e.target.value);
+            setHorarios([]);
+          }}
+          className="mb-4 w-full max-w-xs rounded-lg border border-[#1f1f23] bg-[#121214] px-4 py-3 text-white"
+        />
+
         <div className="flex gap-2 overflow-x-auto pb-2">
           {Array.from({ length: 10 }).map((_, index) => {
             const data = new Date();
@@ -139,6 +167,8 @@ function MeusHorarios() {
           <div>
             <label className="block text-[#9ca3af] mb-2">Início</label>
             <input
+              id="horarios-inicio"
+              name="inicio"
               type="time"
               value={inicio}
               onChange={(e) => setInicio(e.target.value)}
@@ -149,12 +179,35 @@ function MeusHorarios() {
           <div>
             <label className="block text-[#9ca3af] mb-2">Fim</label>
             <input
+              id="horarios-fim"
+              name="fim"
               type="time"
               value={fim}
               onChange={(e) => setFim(e.target.value)}
               className="w-full px-4 py-3 rounded-lg bg-[#121214] border border-[#1f1f23] text-white"
             />
           </div>
+        </div>
+
+        <div className="mb-4 flex flex-wrap gap-2">
+          {[
+            ["08:00", "12:00"],
+            ["13:00", "18:00"],
+            ["18:00", "22:00"],
+            ["08:00", "18:00"],
+          ].map(([presetInicio, presetFim]) => (
+            <button
+              key={`${presetInicio}-${presetFim}`}
+              type="button"
+              onClick={() => {
+                setInicio(presetInicio);
+                setFim(presetFim);
+              }}
+              className="rounded-lg border border-[#c59d5f]/40 px-3 py-2 text-sm font-semibold text-[#c59d5f] hover:bg-[#c59d5f]/10"
+            >
+              {presetInicio} - {presetFim}
+            </button>
+          ))}
         </div>
 
         <button

@@ -1,8 +1,19 @@
+import { useOutletContext } from "react-router-dom";
 import { encerrarExpediente } from "../../services/horarioDisponivelService";
 
+type AgendaContext = {
+  funcionarioId?: number | null;
+};
+
 function Expediente() {
+  const agendaContext = useOutletContext<AgendaContext | null>();
+  const funcionarioContextId = agendaContext?.funcionarioId;
+
   async function encerrar() {
-    const funcionarioId = Number(localStorage.getItem("funcionarioId"));
+    const funcionarioId =
+      funcionarioContextId ||
+      Number(localStorage.getItem("funcionarioAgendaId")) ||
+      Number(localStorage.getItem("funcionarioId"));
 
     if (!funcionarioId) {
       alert("Funcionário não identificado.");

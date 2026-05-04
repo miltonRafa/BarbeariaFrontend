@@ -55,7 +55,7 @@
 }
 
 .login-page__login-collapse.open {
-  max-height: 620px;
+  max-height: 1000px;
 }
 
 .login-page__login-panel {
@@ -215,6 +215,14 @@
 
   .login-page__cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .login-page__hamburger {
+    display: none;
+  }
+
+  .login-page__login-collapse {
+    max-height: none;
   }
 
   .login-page__login-panel {

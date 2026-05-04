@@ -26,6 +26,7 @@ function Dropdown({ label, options, value, onChange }: Props) {
       <div className="relative">
         {/* Botao com area de toque confortavel para mobile. */}
         <button
+          type="button"
           onClick={() => setOpen(!open)}
           className="
             w-full

@@ -1,153 +1,147 @@
 import { useEffect, useState } from "react";
-import { listarClientes } from "../services/clienteService";
+import {
+  atualizarCliente,
+  criarCliente,
+  desativarCliente,
+  listarClientes,
+} from "../services/clienteService";
 
 type Cliente = {
-    id: number;
-    nome: string;
-    email: string;
-    telefone: string;
+  id: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  ativo: boolean;
+  cancelamentos?: number;
+  taxaCancelamento?: number;
+  valorGasto?: number;
 };
 
+const vazio = { nome: "", email: "", telefone: "", senha: "123456" };
+
 function Clientes() {
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(vazio);
+  const [editando, setEditando] = useState<Cliente | null>(null);
+  const [erro, setErro] = useState("");
 
-    const [clientes, setClientes] = useState<Cliente[]>([]);
-    const [loading, setLoading] = useState(true);
+  async function carregarClientes() {
+    try {
+      setLoading(true);
+      const data = await listarClientes();
+      setClientes(Array.isArray(data) ? data : []);
+      setErro("");
+    } catch (error) {
+      console.error("Erro ao buscar clientes", error);
+      setClientes([]);
+      setErro("Não foi possível carregar os clientes. Verifique a conexão com a API.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-    useEffect(() => {
-        async function carregarClientes() {
+  useEffect(() => {
+    carregarClientes();
+  }, []);
 
-            try {
-
-                const data = await listarClientes();
-
-                console.log("Clientes recebidos:", data);
-
-                setClientes(data);
-
-            } catch (error) {
-
-                console.error(
-                    "Erro ao buscar clientes",
-                    error
-                );
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        }
-
-        carregarClientes();
-    }, []);
-
-
-    if (loading) {
-        return (
-            <p className="text-white text-lg">
-                Carregando...
-            </p>
-        );
+  async function salvar(event: React.FormEvent) {
+    event.preventDefault();
+    if (!form.nome || !form.email || !form.telefone) {
+      alert("Preencha nome, email e telefone.");
+      return;
     }
 
+    if (editando) {
+      await atualizarCliente(editando.id, { ...form, ativo: editando.ativo });
+    } else {
+      await criarCliente({ ...form, ativo: true });
+    }
 
-    return (
-        <div>
+    setForm(vazio);
+    setEditando(null);
+    await carregarClientes();
+  }
 
-            <h1 className="
-                text-2xl sm:text-3xl
-                font-bold
-                text-[#c59d5f]
-                mb-6
-                ">
-                Clientes
-            </h1>
+  function editar(cliente: Cliente) {
+    setEditando(cliente);
+    setForm({
+      nome: cliente.nome,
+      email: cliente.email,
+      telefone: cliente.telefone,
+      senha: "",
+    });
+  }
 
+  async function desativar(id: number) {
+    await desativarCliente(id);
+    await carregarClientes();
+  }
 
-            {clientes.length === 0 && (
-                <p className="text-white">
-                    Nenhum cliente encontrado
-                </p>
-            )}
+  if (loading) return <p className="text-white text-lg">Carregando...</p>;
 
+  return (
+    <div>
+      <h1 className="mb-6 text-2xl font-bold text-[#c59d5f] sm:text-3xl">
+        Clientes
+      </h1>
 
-            <div className="
-                grid
-                grid-cols-1
-                md:grid-cols-2
-                lg:grid-cols-3
-                gap-4 sm:gap-5
-                ">
+      {erro && (
+        <p className="mb-5 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-red-200">
+          {erro}
+        </p>
+      )}
 
-                {clientes.map((cliente) => (
-
-                    <div
-                        key={cliente.id}
-
-                        className="
-                            bg-[#0b0b0c]/80
-                            border
-                            border-[#1f1f23]
-                            rounded-lg
-                            p-4 sm:p-5
-                            shadow-lg
-                            text-white
-                            hover:border-[#c59d5f]
-                            transition
-                            "
-                    >
-
-                        <p className="
-                            text-xl
-                            font-semibold
-                            text-[#c59d5f]
-                            mb-3
-                            ">
-                            {cliente.nome}
-                        </p>
-
-                        <p className="text-[#9ca3af] mt-2">
-                            <strong>Email:</strong>
-                            {" "}
-                            {cliente.email}
-                        </p>
-
-                        <p className="text-[#9ca3af]">
-                            <strong>Telefone:</strong>
-                            {" "}
-                            {cliente.telefone}
-                        </p>
-
-                        <div className="
-                            mt-4
-                            pt-4
-                            border-t
-                            border-[#1f1f23]
-                            ">
-
-                            <span className="
-                                text-xs
-                                bg-emerald-500
-                                text-black
-                                px-3 py-1
-                                rounded-full
-                                font-semibold
-                                ">
-                                Cliente ativo
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                ))}
-
-            </div>
-
+      <form onSubmit={salvar} className="mb-8 rounded-lg border border-[#1f1f23] bg-[#0b0b0c]/80 p-4 text-white sm:p-5">
+        <h2 className="mb-4 text-xl font-semibold text-[#c59d5f]">
+          {editando ? "Editar cliente" : "Cadastrar cliente"}
+        </h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <input id="cliente-nome" name="nome" autoComplete="name" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Nome" className="rounded-lg border border-[#1f1f23] bg-[#121214] px-4 py-3" />
+          <input id="cliente-email" name="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" type="email" className="rounded-lg border border-[#1f1f23] bg-[#121214] px-4 py-3" />
+          <input id="cliente-telefone" name="telefone" autoComplete="tel" value={form.telefone} onChange={(e) => setForm({ ...form, telefone: e.target.value })} placeholder="Telefone" className="rounded-lg border border-[#1f1f23] bg-[#121214] px-4 py-3" />
+          <input id="cliente-senha" name="senha" autoComplete="new-password" value={form.senha} onChange={(e) => setForm({ ...form, senha: e.target.value })} placeholder="Senha" type="password" className="rounded-lg border border-[#1f1f23] bg-[#121214] px-4 py-3" />
         </div>
-    );
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button className="rounded-lg bg-[#c59d5f] px-6 py-3 font-bold text-black">
+            {editando ? "Salvar edição" : "Criar cliente"}
+          </button>
+          {editando && (
+            <button type="button" onClick={() => { setEditando(null); setForm(vazio); }} className="rounded-lg border border-white/10 px-6 py-3 font-bold text-white">
+              Cancelar edição
+            </button>
+          )}
+        </div>
+      </form>
 
+      {!erro && clientes.length === 0 && (
+        <p className="text-white">
+          Nenhum cliente cadastrado ainda.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {clientes.map((cliente) => (
+          <div key={cliente.id} className="rounded-lg border border-[#1f1f23] bg-[#0b0b0c]/80 p-4 text-white shadow-lg sm:p-5">
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <p className="text-xl font-semibold text-[#c59d5f]">{cliente.nome}</p>
+              <span className={`rounded-full px-3 py-1 text-xs font-bold ${cliente.ativo ? "bg-emerald-500 text-black" : "bg-red-500/20 text-red-200"}`}>
+                {cliente.ativo ? "Ativo" : "Inativo"}
+              </span>
+            </div>
+            <p className="text-[#9ca3af]"><strong>Email:</strong> {cliente.email}</p>
+            <p className="text-[#9ca3af]"><strong>Telefone:</strong> {cliente.telefone}</p>
+            <p className="mt-3 text-sm text-[#9ca3af]">Cancelamentos: {cliente.cancelamentos ?? 0} ({Number(cliente.taxaCancelamento ?? 0).toFixed(1)}%)</p>
+            <p className="text-sm text-[#9ca3af]">Valor gasto: R$ {Number(cliente.valorGasto ?? 0).toFixed(2).replace(".", ",")}</p>
+            <div className="mt-4 flex flex-wrap gap-2 border-t border-[#1f1f23] pt-4">
+              <button onClick={() => editar(cliente)} className="rounded-lg border border-[#c59d5f]/50 px-3 py-2 text-sm font-semibold text-[#c59d5f]">Editar</button>
+              {cliente.ativo && <button onClick={() => desativar(cliente.id)} className="rounded-lg border border-red-500/40 px-3 py-2 text-sm font-semibold text-red-200">Desativar</button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default Clientes;

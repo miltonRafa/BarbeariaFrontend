@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   atribuirServicosAoFuncionario,
+  desativarServicoDoFuncionario,
   listarServicosDoFuncionario,
 } from "../../services/funcionarioService";
 import { listarServicos } from "../../services/servicoService";
@@ -14,7 +16,13 @@ type Servico = {
   ativo: boolean;
 };
 
+type AgendaContext = {
+  funcionarioId?: number | null;
+};
+
 function MeusServicos() {
+  const agendaContext = useOutletContext<AgendaContext | null>();
+  const funcionarioContextId = agendaContext?.funcionarioId;
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [meusServicos, setMeusServicos] = useState<Servico[]>([]);
   const [servicosSelecionados, setServicosSelecionados] = useState<number[]>([]);
@@ -23,11 +31,23 @@ function MeusServicos() {
   const carregarServicos = useCallback(async () => {
     try {
       const funcionarioId =
+        funcionarioContextId ||
         Number(localStorage.getItem("funcionarioAgendaId")) ||
         Number(localStorage.getItem("funcionarioId"));
 
+      if (!funcionarioId) {
+        setServicos([]);
+        setMeusServicos([]);
+        setServicosSelecionados([]);
+        return;
+      }
+
       const todosServicos = await listarServicos();
-      setServicos(Array.isArray(todosServicos) ? todosServicos : []);
+      setServicos(
+        Array.isArray(todosServicos)
+          ? todosServicos.filter((servico: Servico) => servico.ativo)
+          : []
+      );
 
       const servicosDoFuncionario =
         await listarServicosDoFuncionario(funcionarioId);
@@ -47,7 +67,7 @@ function MeusServicos() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [funcionarioContextId]);
 
   useEffect(() => {
     // Carregamento inicial mantido isolado para preservar o fluxo existente da pagina.
@@ -66,7 +86,10 @@ function MeusServicos() {
   }
 
   async function salvarServicos() {
-    const funcionarioId = Number(localStorage.getItem("funcionarioId"));
+    const funcionarioId =
+      funcionarioContextId ||
+      Number(localStorage.getItem("funcionarioAgendaId")) ||
+      Number(localStorage.getItem("funcionarioId"));
 
     if (!funcionarioId) {
       alert("Funcionário não identificado. Faça login novamente.");
@@ -99,6 +122,15 @@ function MeusServicos() {
       console.error("Erro ao atribuir serviços", error);
       alert("Erro ao atribuir serviços.");
     }
+  }
+
+  async function desativarMeuServico(servicoId: number) {
+    const funcionarioId =
+      funcionarioContextId ||
+      Number(localStorage.getItem("funcionarioAgendaId")) ||
+      Number(localStorage.getItem("funcionarioId"));
+    await desativarServicoDoFuncionario(funcionarioId, servicoId);
+    await carregarServicos();
   }
 
   if (loading) {
@@ -199,6 +231,13 @@ function MeusServicos() {
             <p className="text-sm">
               <strong>Duração:</strong> {servico.duracaoMinutos} min
             </p>
+            <button
+              type="button"
+              onClick={() => desativarMeuServico(servico.id)}
+              className="mt-4 rounded-lg border border-red-500/40 px-3 py-2 text-sm font-semibold text-red-200 hover:bg-red-500/10"
+            >
+              Desativar para mim
+            </button>
           </div>
         ))}
       </div>

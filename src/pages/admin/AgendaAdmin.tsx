@@ -104,7 +104,7 @@ function AgendaAdmin() {
         </nav>
       </div>
 
-      <Outlet />
+      <Outlet context={{ funcionarioId: funcionarioSelecionado }} />
     </div>
   );
 }
