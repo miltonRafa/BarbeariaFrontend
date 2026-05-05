@@ -1,31 +1,35 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
-import LayoutCliente from "./pages/cliente/LayoutCliente";
-import Agendar from "./pages/cliente/Agendar";
-import ServicosAgendados from "./pages/cliente/ServicosAgendados";
+import LayoutCliente from "./modules/cliente/pages/LayoutCliente";
+import Agendar from "./modules/cliente/pages/Agendar";
+import ServicosAgendados from "./modules/cliente/pages/ServicosAgendados";
 
-import LayoutAdmin from "./pages/admin/LayoutAdmin";
-import Clientes from "./pages/Clientes";
-import Agendamentos from "./pages/Agendamentos";
-import Funcionarios from "./pages/Funcionarios";
-import Estoque from "./pages/Estoque";
-import Financeiro from "./pages/admin/Financeiro";
-import Relatorios from "./pages/admin/Relatorios";
-import Login from "./pages/Login";
-import Configuracoes from "./pages/Configuracoes";
-import Servicos from "./pages/Servicos";
+import LayoutAdmin from "./modules/admin/pages/LayoutAdmin";
+import Clientes from "./modules/cliente/pages/Clientes";
+import Agendamentos from "./modules/agendamento/pages/Agendamentos";
+import Funcionarios from "./modules/funcionario/pages/Funcionarios";
+import Estoque from "./modules/estoque/pages/Estoque";
+import Financeiro from "./modules/financeiro/pages/Financeiro";
+import Relatorios from "./modules/relatorio/pages/Relatorios";
+import Login from "./modules/auth/pages/Login";
+import CadastroClientePage from "./modules/auth/pages/CadastroClientePage";
+import ConfirmarEmailPage from "./modules/auth/pages/ConfirmarEmailPage";
+import LoginClientePage from "./modules/auth/pages/LoginClientePage";
+import EmpresaPublicaPage from "./modules/empresa/pages/EmpresaPublicaPage";
+import Configuracoes from "./modules/configuracoes/pages/Configuracoes";
+import Servicos from "./modules/servico/pages/Servicos";
 
-import LayoutFuncionario from "./pages/funcionario/LayoutFuncionario";
-import MeusAgendamentos from "./pages/funcionario/MeusAgendamentos";
-import MeusHorarios from "./pages/funcionario/MeusHorarios";
-import MeusServicos from "./pages/funcionario/MeusServicos";
-import Expediente from "./pages/funcionario/Expediente";
+import LayoutFuncionario from "./modules/funcionario/pages/LayoutFuncionario";
+import MeusAgendamentos from "./modules/funcionario/pages/MeusAgendamentos";
+import MeusHorarios from "./modules/funcionario/pages/MeusHorarios";
+import MeusServicos from "./modules/funcionario/pages/MeusServicos";
+import Expediente from "./modules/funcionario/pages/Expediente";
 
-import LayoutCaixa from "./pages/caixa/LayoutCaixa";
-import Caixa from "./pages/caixa/Caixa";
+import LayoutCaixa from "./modules/caixa/pages/LayoutCaixa";
+import Caixa from "./modules/caixa/pages/Caixa";
 
-import AgendaAdmin from "./pages/admin/AgendaAdmin";
-import Dashboard from "./pages/admin/Dashboard";
+import AgendaAdmin from "./modules/agendamento/pages/AgendaAdmin";
+import Dashboard from "./modules/dashboard/pages/Dashboard";
 
 
 
@@ -34,6 +38,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/cliente/:slugPublico" element={<EmpresaPublicaPage />} />
+        <Route path="/cadastro-cliente/:slugPublico" element={<CadastroClientePage />} />
+        <Route path="/login-cliente/:slugPublico" element={<LoginClientePage />} />
+        <Route path="/confirmar-email" element={<ConfirmarEmailPage />} />
 
         <Route path="/cliente" element={<LayoutCliente />}>
           <Route index element={<Navigate to="agendamentos" replace />} />
@@ -49,7 +57,7 @@ function App() {
           <Route path="expediente" element={<Expediente />} />
         </Route>
 
-        <Route path="/caixa" element={<LayoutCaixa />}>
+        <Route path="/caixa-operacao" element={<LayoutCaixa />}>
           <Route index element={<Caixa />} />
         </Route>
 
@@ -68,6 +76,7 @@ function App() {
           <Route path="funcionarios" element={<Funcionarios />} />
           <Route path="agendamentos" element={<Agendamentos />} />
           <Route path="estoque" element={<Estoque />} />
+          <Route path="caixa" element={<Caixa />} />
           <Route path="financeiro" element={<Financeiro />} />
           <Route path="servicos" element={<Servicos />} />
           <Route path="relatorios" element={<Relatorios />} />
